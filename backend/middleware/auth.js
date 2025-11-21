@@ -10,7 +10,7 @@ export function authenticateApiKey(req, res, next) {
     });
   }
 
-  const validKey = process.env.API_KEY || 'sk_prod_d844037cde814fecb36a0813208819a0';
+  const validKey = process.env.API_KEY || 'sk_prod_d844037cde814fecb36a0813208819a0'; // encore un leak donc aussi révoqué
   
   if (apiKey !== validKey) {
     return res.status(403).json({ 
