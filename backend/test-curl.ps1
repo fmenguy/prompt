@@ -1,6 +1,6 @@
 # Configuration
 $VERCEL_URL = "https://prompt-generator-gyd6j9grg-francois-menguys-projects.vercel.app"
-$API_KEY = "sk_prod_e378005a6c584b1a841f125839fc4924"
+$API_KEY = "sk_prod_e378005a6c584b1a841f125839fc4924" //leak lol donc révoqué
 
 Write-Host "=======================================" -ForegroundColor Cyan
 Write-Host "Test 1 : Health Check" -ForegroundColor Yellow
