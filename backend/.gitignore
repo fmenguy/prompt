@@ -8,4 +8,3 @@ node_modules/
 *.log
 npm-debug.log*
 .vercel
-test-curl.ps1
