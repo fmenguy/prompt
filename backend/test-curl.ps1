@@ -1,36 +1,87 @@
 # ─────────────────────────────────────────────────
-# 📁 backend/test-curl.ps1
+# Test API Backend
 # ─────────────────────────────────────────────────
 
-# Lire la clé depuis .env
+# Lire la cle depuis .env
 $envContent = Get-Content .env -Raw
 $API_KEY = ($envContent -split "`n" | Where-Object { $_ -match '^API_KEY=' }) -replace 'API_KEY=', ''
+$API_KEY = $API_KEY.Trim()
 
 if (-not $API_KEY) {
-    Write-Host "❌ API_KEY introuvable dans .env" -ForegroundColor Red
+    Write-Host "ERREUR: API_KEY introuvable dans .env" -ForegroundColor Red
     exit 1
 }
 
-Write-Host "✅ API_KEY chargée depuis .env" -ForegroundColor Green
+Write-Host "OK: API_KEY chargee depuis .env" -ForegroundColor Green
+Write-Host ""
 
 # URL de ton backend Vercel
 $API_URL = "https://prompt-generator-m7lqs6y7m-francois-menguys-projects.vercel.app"
 
-# Test 1: Health check
-Write-Host "`n🔍 Test 1: Health check..." -ForegroundColor Cyan
-curl.exe "$API_URL/api/health"
+# Test 1: Health Check
+Write-Host "TEST 1: Health check" -ForegroundColor Cyan
+Write-Host "URL: $API_URL/api/health" -ForegroundColor Gray
+Write-Host ""
 
-# Test 2: Generate prompt
-Write-Host "`n🔍 Test 2: Generate prompt..." -ForegroundColor Cyan
+try {
+    $response = Invoke-RestMethod -Uri "$API_URL/api/health" -Method GET -ErrorAction Stop
+    Write-Host "SUCCES!" -ForegroundColor Green
+    $response | ConvertTo-Json -Depth 3
+} catch {
+    Write-Host "ERREUR: $($_.Exception.Message)" -ForegroundColor Red
+    if ($_.Exception.Response) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        $responseBody = $reader.ReadToEnd()
+        Write-Host "Details: $responseBody" -ForegroundColor Yellow
+    }
+}
+
+Write-Host ""
+Write-Host "----------------------------------------" -ForegroundColor Gray
+Write-Host ""
+
+# Test 2: Generate Prompt
+Write-Host "TEST 2: Generate prompt" -ForegroundColor Cyan
+Write-Host "URL: $API_URL/api/generate-prompt" -ForegroundColor Gray
+Write-Host "API Key: $($API_KEY.Substring(0,15))..." -ForegroundColor Gray
+Write-Host ""
+
+# Corps de la requete
 $body = @{
     selectedTags = @("cinematic", "dramatic")
     subjectData = @{
-        subject = "sunset over mountains"
+        subject = "dragon flying"
         style = "photorealistic"
     }
-} | ConvertTo-Json
+}
 
-curl.exe -X POST "$API_URL/api/generate-prompt" `
-    -H "Content-Type: application/json" `
-    -H "x-api-key: $API_KEY" `
-    -d $body
+$headers = @{
+    "Content-Type" = "application/json"
+    "x-api-key" = $API_KEY
+}
+
+try {
+    $response = Invoke-RestMethod -Uri "$API_URL/api/generate-prompt" `
+        -Method POST `
+        -Headers $headers `
+        -Body ($body | ConvertTo-Json -Depth 3) `
+        -ErrorAction Stop
+    
+    Write-Host "SUCCES!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Prompt genere:" -ForegroundColor Cyan
+    Write-Host $response.enhancedPrompt -ForegroundColor White
+    
+} catch {
+    Write-Host "ERREUR: $($_.Exception.Message)" -ForegroundColor Red
+    if ($_.Exception.Response) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        $responseBody = $reader.ReadToEnd()
+        Write-Host "Details: $responseBody" -ForegroundColor Yellow
+    }
+}
+
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Gray
+Write-Host "Tests termines" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Gray
