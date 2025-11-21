@@ -70,7 +70,7 @@ try {
     Write-Host "SUCCES!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Prompt genere:" -ForegroundColor Cyan
-    Write-Host $response.enhancedPrompt -ForegroundColor White
+    Write-Host $response.prompt -ForegroundColor White
     
 } catch {
     Write-Host "ERREUR: $($_.Exception.Message)" -ForegroundColor Red
