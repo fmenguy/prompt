@@ -1,16 +1,67 @@
-# React + Vite
+# 🎨 Générateur de Prompt IA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application complète pour créer des prompts professionnels pour la génération d'images IA.
 
-Currently, two official plugins are available:
+## 📦 Structure du projet
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+prompt/
+├── frontend/    # Application React + Vite
+└── backend/     # API Node.js + Express
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Installation
 
-## Expanding the ESLint configuration
+### Backend
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+cd backend
+npm install
+cp .env.example .env  # Configurer HF_TOKEN
+npm run dev
+```
+
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## 🌐 URLs de développement
+
+* **Frontend** : [http://localhost:5173](http://localhost:5173)
+* **Backend API** : [http://localhost:3001](http://localhost:3001)
+
+## 📚 Documentation
+
+* [Frontend README](./frontend/README.md)
+* [Backend README](./backend/README.md)
+
+## 👤 Auteur
+
+**François Menguy**
+🌐 [fmenguy.fr](https://fmenguy.fr)
+
+## 📄 Licence
+
+MIT
+
+## Technologies
+
+* React 18
+* Vite
+* Tailwind CSS
+* Lucide React (icônes)
+
+## Endpoints
+
+* `GET /api/health` - Health check
+* `POST /api/generate-prompt` - Génération de prompt
+
+## Technologies
+
+* Node.js
+* Express
+* Hugging Face API

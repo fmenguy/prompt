@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# Environment (CRITIQUE !)
+.env
+
+# Logs
+*.log
+npm-debug.log*
+.vercel
