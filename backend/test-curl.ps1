@@ -14,7 +14,7 @@ if (-not $API_KEY) {
 Write-Host "✅ API_KEY chargée depuis .env" -ForegroundColor Green
 
 # URL de ton backend Vercel
-$API_URL = "https://prompt-generator-d1gj3beak-francois-menguys-projects.vercel.app"
+$API_URL = "https://prompt-generator-m7lqs6y7m-francois-menguys-projects.vercel.app"
 
 # Test 1: Health check
 Write-Host "`n🔍 Test 1: Health check..." -ForegroundColor Cyan
