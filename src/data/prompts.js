@@ -1,4 +1,40 @@
 export const promptData = {
+  // 🆕 NOUVEAU : Identification du sujet
+  subject: {
+    type: [
+      { label: "Person", value: "person" },
+      { label: "Animal", value: "animal" },
+      { label: "Object", value: "object" },
+      { label: "Landscape", value: "landscape" },
+      { label: "Architecture", value: "architecture" },
+    ],
+    species: [
+      { label: "Human", value: "human" },
+      { label: "Elf", value: "elf" },
+      { label: "Dwarf", value: "dwarf" },
+      { label: "Vampire", value: "vampire" },
+      { label: "Angel", value: "angel" },
+      { label: "Demon", value: "demon" },
+      { label: "Robot", value: "robot" },
+      { label: "Cyborg", value: "cyborg" },
+    ],
+    gender: [
+      { label: "Female", value: "female" },
+      { label: "Male", value: "male" },
+      { label: "Non-binary", value: "non-binary" },
+    ],
+    age: [
+      { label: "Girl", value: "girl" },
+      { label: "Woman", value: "woman" },
+      { label: "Boy", value: "boy" },
+      { label: "Man", value: "man" },
+      { label: "Elder", value: "elderly" },
+      { label: "Child", value: "child" },
+      { label: "Teen", value: "teenager" },
+      { label: "Young adult", value: "young adult" },
+    ],
+  },
+
   quality: [
     { label: "UHD", value: "UHD" },
     { label: "8K", value: "8k" },
