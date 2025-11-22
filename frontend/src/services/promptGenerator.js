@@ -106,9 +106,6 @@ Return ONLY the final prompt. No explanations, no markdown, no prefix/suffix.`;
 function generateSmartFallback(tags, subject) {
   const parts = [];
 
-  // Ajouter un contexte par défaut si absent
-  const context = subject.context || 'Génération d image';
-
   // 1. Count
   parts.push('1girl');
 
