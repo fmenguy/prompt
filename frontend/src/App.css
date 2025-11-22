@@ -106,6 +106,7 @@
   height: 8px;
   background: transparent;
   outline: none;
+  appearance: none;
   -webkit-appearance: none;
 }
 

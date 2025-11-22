@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { promptData as prompts } from './data/prompts';
 import { generateEnhancedPrompt } from './services/promptGenerator';
 import { generateNegativePrompt } from './utils/negativePromptGenerator';
