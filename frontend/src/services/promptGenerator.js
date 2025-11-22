@@ -9,17 +9,25 @@ export async function generateEnhancedPrompt(selectedTags, subjectData) {
 
   try {
     console.log('🔄 Appel API:', API_URL);
-    
+
+    // Adapter les données pour correspondre au format attendu par le backend
+    const payload = {
+      context: subjectData.context || '',
+      style: subjectData.style || '',
+      tone: subjectData.tone || '',
+      selectedTags: selectedTags || [],
+      customInstructions: subjectData.customInstructions || ''
+    };
+
+    console.log('📤 Données envoyées:', payload);
+
     const response = await fetch(`${API_URL}/api/generate-prompt`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': API_KEY
       },
-      body: JSON.stringify({
-        selectedTags,
-        subjectData
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
