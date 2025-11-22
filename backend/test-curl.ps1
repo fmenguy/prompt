@@ -16,7 +16,7 @@ Write-Host "OK: API_KEY chargee depuis .env" -ForegroundColor Green
 Write-Host ""
 
 # URL de ton backend Vercel
-$API_URL = "https://prompt-generator-te7l703h5-francois-menguys-projects.vercel.app"
+$API_URL = "https://prompt-generator-dgb71id8v-francois-menguys-projects.vercel.app"
 
 # Test 1: Health Check
 Write-Host "TEST 1: Health check" -ForegroundColor Cyan

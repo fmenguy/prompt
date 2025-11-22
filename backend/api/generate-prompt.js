@@ -1,117 +1,95 @@
-// ═══════════════════════════════════════════════════════════════
-// 📁 backend/api/generate-prompt.js
-// Version robuste avec gestion d'erreurs renforcée
-// ═══════════════════════════════════════════════════════════════
-
+// backend/api/generate-prompt.js
 export default async function handler(req, res) {
-  // ═══ CORS ═══
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
+  // --- GESTION CORS MANUELLE (Sécurité doublée) ---
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Pour la prod, mets 'https://aiprompt.fmenguy.fr' plus tard
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, x-api-key');
 
+  // Réponse immédiate pour la pré-vérification du navigateur
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // --- VÉRIFICATION CLÉ API INTERNE (Si tu utilises VITE_API_KEY) ---
+  // (Décommente si tu veux protéger ton API des autres)
+  /*
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey !== process.env.API_KEY) {
+     return res.status(401).json({ error: 'Unauthorized' });
+  }
+  */
+
   try {
-    // ═══ EXTRACTION SÉCURISÉE DES DONNÉES ═══
-    const { 
-      context = '', 
-      style = '', 
-      tone = '', 
-      selectedTags = [],  // Tableau par défaut
-      customInstructions = '' 
-    } = req.body || {};
+    const { context, style, tone, selectedTags, customInstructions } = req.body;
 
-    console.log('📥 Données reçues:', {
-      context,
-      style,
-      tone,
-      selectedTags,
-      customInstructions
-    });
-
-    // ═══ VALIDATION ═══
-    if (!context || typeof context !== 'string' || context.trim().length === 0) {
-      return res.status(400).json({ 
-        error: 'Le contexte est requis',
-        received: { context, type: typeof context }
-      });
+    // Vérification basique
+    if (!context) {
+      return res.status(400).json({ error: 'Le contexte est requis' });
     }
 
-    // ═══ GESTION ULTRA-ROBUSTE DES TAGS ═══
-    let tagList = 'Aucun';
+    // --- PRÉPARATION DU PROMPT POUR L'IA ---
+    const systemPrompt = `Tu es un expert en génération de prompts pour Midjourney.
+    Ta tâche est de créer un prompt détaillé en ANGLAIS basé sur les informations fournies.
+    Renvoie UNIQUEMENT le prompt, sans texte avant ni après.`;
+
+    const userMessage = `
+    Context: ${context}
+    Style: ${style || 'Realistic'}
+    Tone: ${tone || 'Neutral'}
+    Keywords: ${selectedTags ? selectedTags.join(', ') : ''}
+    Instructions: ${customInstructions || ''}
+    `;
+
+    // --- APPEL HUGGING FACE ---
+    // Utilisation du modèle Mistral-7B-Instruct
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HF_TOKEN}`, // Utilise la bonne variable !
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          inputs: `<s>[INST] ${systemPrompt} \n\n ${userMessage} [/INST]`,
+          parameters: {
+            max_new_tokens: 250,
+            temperature: 0.7,
+            return_full_text: false, 
+          },
+        }),
+      }
+    );
+
+    // Gestion d'erreur de l'API Hugging Face
+    if (!response.ok) {
+      const errorDetail = await response.text();
+      console.error("Erreur HF:", errorDetail);
+      throw new Error(`Erreur Hugging Face: ${response.status} - ${errorDetail}`);
+    }
+
+    const result = await response.json();
     
-    if (selectedTags) {
-      if (Array.isArray(selectedTags)) {
-        const validTags = selectedTags.filter(tag => 
-          tag && typeof tag === 'string' && tag.trim().length > 0
-        );
-        if (validTags.length > 0) {
-          tagList = validTags.join(', ');
-        }
-      } else if (typeof selectedTags === 'string') {
-        tagList = selectedTags;
-      }
-    }
+    // L'API renvoie souvent un tableau [{ generated_text: "..." }]
+    let generatedText = result[0]?.generated_text || "";
 
-    console.log('🏷️ Tags traités:', tagList);
-
-    // ═══ CONSTRUCTION DU PROMPT ═══
-    const generatedPrompt = `# Prompt Optimisé IA
-
-**Contexte** : ${context.trim()}
-
-**Style** : ${style || 'Standard'}
-
-**Ton** : ${tone || 'Neutre'}
-
-**Tags** : ${tagList}
-
-${customInstructions ? `**Instructions complémentaires** : ${customInstructions}\n` : ''}
-
----
-
-## Structure recommandée
-
-1. **Objectif principal** : [À définir selon le contexte]
-
-2. **Contraintes** :
-   - Respecter le style : ${style || 'Standard'}
-   - Adopter un ton : ${tone || 'Neutre'}
-
-3. **Livrables attendus** : [À préciser]
-
----
-
-*Généré le ${new Date().toLocaleString('fr-FR')}*`;
-
-    console.log('✅ Prompt généré avec succès');
-
-    return res.status(200).json({
-      success: true,
-      prompt: generatedPrompt,
-      model: 'template-based',
-      metadata: {
-        context: context.substring(0, 50) + '...',
-        style,
-        tone,
-        tagsCount: Array.isArray(selectedTags) ? selectedTags.length : 0
-      }
-    });
+    // --- RÉPONSE AU FRONTEND ---
+    // Le frontend attend probablement un tableau pour faire .join(), 
+    // ou alors ton code front doit être adapté.
+    // Ici je renvoie un objet standard.
+    res.status(200).json({ result: generatedText.trim() });
 
   } catch (error) {
     console.error('❌ Erreur backend:', error);
-    
-    return res.status(500).json({
-      error: 'Erreur serveur',
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    res.status(500).json({ 
+      error: 'Erreur lors de la génération', 
+      details: error.message 
     });
   }
 }
