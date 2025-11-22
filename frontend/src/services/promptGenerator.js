@@ -1,5 +1,7 @@
+// frontend/src/services/promptGenerator.js
+
 // ✅ VERSION SÉCURISÉE avec variables d'environnement
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 export async function generateEnhancedPrompt(selectedTags, subjectData) {
@@ -10,14 +12,17 @@ export async function generateEnhancedPrompt(selectedTags, subjectData) {
   try {
     console.log('🔄 Appel API:', API_URL);
 
+    // ✅ CORRECTION : Adaptation du nouveau format age + gender
+    const adaptedTags = adaptTagsFormat(selectedTags);
+
     // Adapter les données pour correspondre au format attendu par le backend
     const payload = {
-      context: subjectData.context || 'Génération d image', // Ajoute un contexte par défaut
+      context: subjectData.context || 'Génération d\'image',
       style: subjectData.style || '',
       tone: subjectData.tone || '',
-      selectedTags: selectedTags || [],
+      selectedTags: adaptedTags, // ✅ Tags adaptés
       customInstructions: subjectData.customInstructions || '',
-      systemPrompt: getModernSystemPrompt() // ✅ Nouveau prompt système
+      systemPrompt: getModernSystemPrompt()
     };
 
     console.log('📤 Données envoyées:', payload);
@@ -49,6 +54,40 @@ export async function generateEnhancedPrompt(selectedTags, subjectData) {
     console.error('❌ Erreur réseau:', error);
     return generateSmartFallback(selectedTags, subjectData);
   }
+}
+
+// ═══════════════════════════════════════════════════════
+// ✅ NOUVEAU : Adaptation du format age + gender
+// ═══════════════════════════════════════════════════════
+function adaptTagsFormat(selectedTags) {
+  const adapted = { ...selectedTags };
+
+  // ✅ Conversion age (objet → description textuelle)
+  if (adapted.age && typeof adapted.age === 'object') {
+    const { min, max } = adapted.age;
+    adapted.ageDescription = getAgeDescription(min, max);
+    adapted.ageRange = `${min}-${max}`;
+  }
+
+  // ✅ Conversion gender (object avec .value → string)
+  if (adapted.gender && typeof adapted.gender === 'object') {
+    adapted.gender = adapted.gender.value || adapted.gender;
+  }
+
+  return adapted;
+}
+
+// ✅ Conversion range d'âge en description
+function getAgeDescription(minAge, maxAge) {
+  if (!minAge || !maxAge) return '';
+  
+  const avgAge = Math.round((minAge + maxAge) / 2);
+  
+  if (avgAge < 25) return 'young';
+  if (avgAge < 35) return 'young adult';
+  if (avgAge < 50) return 'middle-aged';
+  if (avgAge < 65) return 'mature';
+  return 'elderly';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -106,70 +145,75 @@ Return ONLY the final prompt. No explanations, no markdown, no prefix/suffix.`;
 function generateSmartFallback(tags, subject) {
   const parts = [];
 
+  // ✅ CORRECTION : Gestion du nouveau format gender
+  const genderValue = tags.gender?.value || tags.gender || 'female';
+  const countTag = genderValue === 'male' ? '1boy' : 
+                   genderValue === 'androgynous' ? '1person' : '1girl';
+
   // 1. Count
-  parts.push('1girl');
+  parts.push(countTag);
+
+  // ✅ CORRECTION : Ajout de la description d'âge si disponible
+  if (tags.ageDescription) {
+    parts.push(tags.ageDescription);
+  }
 
   // 2. Species (avec résolution de conflits)
   if (subject.species) {
     if (subject.species.toLowerCase().includes('elf')) {
-      parts.push('solo, beautiful female elf, delicate pointed elf ears');
+      parts.push('solo, beautiful elf, delicate pointed elf ears');
     } else if (subject.species.toLowerCase().includes('fox')) {
-      parts.push('solo, fox girl, fluffy fox ears and tail');
+      parts.push('solo, fox person, fluffy fox ears and tail');
     } else {
       parts.push(`solo, ${subject.species}`);
     }
   }
 
   // 3. Physical features
-  const hairColor = tags.find(t => t.includes('hair'));
-  const eyeColor = tags.find(t => t.includes('eyes'));
+  const hairTags = Array.isArray(tags.hair) ? tags.hair : [];
+  const eyeTags = Array.isArray(tags.eyes) ? tags.eyes : [];
 
-  if (eyeColor) parts.push(`${eyeColor} with detailed iris`);
-  if (hairColor) parts.push(`${hairColor}`);
+  if (eyeTags.length) parts.push(`${eyeTags.join(', ')} with detailed iris`);
+  if (hairTags.length) parts.push(`${hairTags.join(', ')}`);
 
   // 4. Clothing
-  const clothing = tags.filter(t =>
-    t.includes('hood') ||
-    t.includes('armor') ||
-    t.includes('dress') ||
-    t.includes('shirt')
-  );
-  if (clothing.length) parts.push(...clothing);
+  const clothingCategories = ['topwear', 'bottomwear', 'footwear'];
+  clothingCategories.forEach(cat => {
+    if (Array.isArray(tags[cat]) && tags[cat].length) {
+      parts.push(...tags[cat]);
+    }
+  });
 
-  // 5. Expression/Pose
-  const expressions = tags.filter(t =>
-    t.includes('smile') ||
-    t.includes('angry') ||
-    t.includes('sad')
-  );
-  if (expressions.length) parts.push(...expressions);
-
-  // 6. Camera
-  const camera = tags.filter(t =>
-    t.includes('close-up') ||
-    t.includes('wide-angle') ||
-    t.includes('portrait')
-  );
-  if (camera.length) parts.push(...camera);
-
-  // 7. Technical
-  const technical = tags.filter(t =>
-    t.includes('8k') ||
-    t.includes('UHD') ||
-    t.includes('detailed')
-  );
-  if (technical.length) {
-    parts.push('ultra-detailed');
-    parts.push(...technical);
+  // 5. Accessories
+  if (Array.isArray(tags.accessories) && tags.accessories.length) {
+    parts.push(`wearing ${tags.accessories.join(', ')}`);
   }
 
-  // 8. Quality tags (pas de duplicates)
-  const qualityTags = ['masterpiece', 'best quality'];
-  const hasQuality = tags.some(t =>
-    qualityTags.includes(t.toLowerCase())
-  );
-  if (!hasQuality) {
-    parts.push('masterpiece', 'best quality');
+  // 6. Expression/Pose
+  if (Array.isArray(tags.pose) && tags.pose.length) {
+    parts.push(...tags.pose);
+  }
+
+  // 7. Location
+  if (Array.isArray(tags.location) && tags.location.length) {
+    parts.push(`in ${tags.location.join(', ')}`);
+  }
+
+  // 8. Camera
+  if (Array.isArray(tags.camera) && tags.camera.length) {
+    parts.push(...tags.camera);
+  }
+
+  // 9. Lighting
+  if (Array.isArray(tags.lighting) && tags.lighting.length) {
+    parts.push(...tags.lighting);
+  }
+
+  // 10. Technical quality
+  if (Array.isArray(tags.quality) && tags.quality.length) {
+    parts.push(...tags.quality);
+  } else {
+    parts.push('ultra-detailed', 'masterpiece', 'best quality');
   }
 
   // Dédupliquer et joindre
