@@ -39,3 +39,4 @@ frontend/.vite/
 .cache/
 
 .vercel
+tree*
