@@ -1,18 +1,96 @@
-// ═══════════════════════════════════════════════════════════════
-// 📁 backend/api/generate-prompt.js
-// Version 100% GRATUITE avec Hugging Face (Mistral-7B)
-// ═══════════════════════════════════════════════════════════════
+// backend/api/generate-prompt.js
+const fetch = require('node-fetch');
 
-const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
-const API_KEY = process.env.API_KEY;
-const MODEL_ID = 'mistralai/Mistral-7B-Instruct-v0.2';
+const HF_API_URL = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
 
-export default async function handler(req, res) {
-  // ═══ CORS ═══
+// Timeout pour Hugging Face (30s max)
+const fetchWithTimeout = (url, options, timeout = 30000) => {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), timeout)
+    )
+  ]);
+};
+
+// Fonction pour appeler Hugging Face
+async function callHuggingFace(systemPrompt, userInput, retries = 2) {
+  const prompt = `<s>[INST] ${systemPrompt}\n\n${userInput} [/INST]`;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetchWithTimeout(HF_API_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HF_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 800,
+            temperature: 0.7,
+            top_p: 0.9,
+            do_sample: true,
+            return_full_text: false
+          }
+        })
+      }, 30000);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HF API Error (attempt ${i + 1}):`, errorText);
+        
+        if (response.status === 503 && i < retries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          continue;
+        }
+        
+        throw new Error(`HF API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
+        return data[0].generated_text.trim();
+      }
+      
+      throw new Error('Invalid response format from Hugging Face');
+
+    } catch (error) {
+      console.error(`HF attempt ${i + 1} failed:`, error.message);
+      
+      if (i === retries - 1) {
+        throw error;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+}
+
+// Fallback local si Hugging Face échoue
+function generateLocalFallback(context, style, tone, tags, customInstructions) {
+  const tagList = Array.isArray(tags) ? tags.join(', ') : '';
+  
+  return `Génère un prompt optimisé avec ces paramètres :
+
+**Contexte :** ${context || 'Non spécifié'}
+**Style :** ${style || 'Non spécifié'}  
+**Ton :** ${tone || 'Non spécifié'}
+**Tags :** ${tagList || 'Aucun'}
+**Instructions :** ${customInstructions || 'Aucune'}
+
+Le prompt doit être structuré, détaillé et adapté pour une IA générative.`;
+}
+
+// Route API principale
+module.exports = async (req, res) => {
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
-  res.setHeader('Access-Control-Max-Age', '86400');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -22,195 +100,52 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // ═══ VÉRIFICATION API KEY ═══
-  const clientApiKey = req.headers['x-api-key'];
-  if (!clientApiKey || clientApiKey !== API_KEY) {
-    console.error('❌ Invalid API key');
-    return res.status(401).json({ error: 'Invalid API key' });
-  }
-
-  if (!HUGGINGFACE_API_KEY) {
-    console.error('❌ HUGGINGFACE_API_KEY not configured');
-    return res.status(500).json({ error: 'Server configuration error' });
-  }
-
   try {
-    console.log('📥 Requête reçue:', JSON.stringify(req.body, null, 2));
+    const { context, style, tone, selectedTags, customInstructions } = req.body;
 
-    // ═══ EXTRACTION SÉCURISÉE DES DONNÉES ═══
-    const { tags, selectedTags, subject, subjectData, style } = req.body || {};
-
-    // 🛡️ Protection contre undefined/null
-    const safeTags = Array.isArray(tags) ? tags : 
-                     (Array.isArray(selectedTags) ? selectedTags : []);
-    const safeSubject = subject || subjectData || {};
-    const safeStyle = style || {};
-
-    console.log('✅ Données validées:', {
-      tags: safeTags,
-      subjectText: safeSubject.text || 'N/A',
-      style: safeStyle
-    });
-
-    // ═══ VALIDATION ═══
-    if (safeTags.length === 0) {
-      console.warn('⚠️ Aucun tag sélectionné');
-      return res.status(400).json({
-        success: false,
-        error: 'At least one tag is required'
-      });
+    // Validation
+    if (!context || typeof context !== 'string' || context.trim().length === 0) {
+      return res.status(400).json({ error: 'Le contexte est requis' });
     }
 
-    // ═══ CONSTRUCTION DU PROMPT ═══
-    const userPrompt = `Create a detailed Stable Diffusion prompt using these elements:
-Tags: ${safeTags.join(', ')}
-${safeSubject.text ? `Subject: ${safeSubject.text}` : ''}
-${safeStyle.name ? `Style: ${safeStyle.name}` : ''}
+    // Construction du prompt système
+    const systemPrompt = `Tu es un expert en création de prompts pour IA. Génère un prompt optimisé, structuré et détaillé basé sur les paramètres fournis.`;
 
-Generate ONLY the prompt text, no explanations. Make it creative and detailed.`;
+    const tags = Array.isArray(selectedTags) ? selectedTags : [];
+    const tagList = tags.length > 0 ? tags.join(', ') : 'Aucun';
 
-    console.log('📤 Envoi à Hugging Face...');
+    const userInput = `Crée un prompt avec :
+- Contexte: ${context}
+- Style: ${style || 'Non spécifié'}
+- Ton: ${tone || 'Non spécifié'}
+- Tags: ${tagList}
+- Instructions: ${customInstructions || 'Aucune'}`;
 
-    // ═══ APPEL HUGGING FACE (avec retry) ═══
-    let attempt = 0;
-    const maxAttempts = 3;
-    let lastError = null;
+    console.log('Appel Hugging Face...');
 
-    while (attempt < maxAttempts) {
-      attempt++;
-      console.log(`🔄 Tentative ${attempt}/${maxAttempts}`);
+    let generatedPrompt;
 
-      try {
-        const response = await fetch(
-          `https://api-inference.huggingface.co/models/${MODEL_ID}`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HUGGINGFACE_API_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              inputs: userPrompt,
-              parameters: {
-                max_new_tokens: 250,
-                temperature: 0.8,
-                top_p: 0.95,
-                return_full_text: false,
-                do_sample: true
-              },
-              options: {
-                wait_for_model: true,  // ← Attend que le modèle charge
-                use_cache: false
-              }
-            })
-          }
-        );
-
-        // ═══ GESTION DES ERREURS HTTP ═══
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`❌ Erreur HTTP ${response.status}:`, errorText);
-
-          // Si le modèle charge, attendre et réessayer
-          if (response.status === 503 && attempt < maxAttempts) {
-            console.log('⏳ Modèle en chargement, attente 5 secondes...');
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            continue;
-          }
-
-          lastError = new Error(`Hugging Face error: ${response.status}`);
-          break;
-        }
-
-        // ═══ PARSING RÉPONSE ═══
-        const result = await response.json();
-        console.log('✅ Réponse Hugging Face:', JSON.stringify(result, null, 2));
-
-        let generatedPrompt = '';
-
-        // Formats de réponse possibles
-        if (Array.isArray(result) && result[0]?.generated_text) {
-          generatedPrompt = result[0].generated_text.trim();
-        } else if (result.generated_text) {
-          generatedPrompt = result.generated_text.trim();
-        } else if (typeof result === 'string') {
-          generatedPrompt = result.trim();
-        } else {
-          console.warn('⚠️ Format inattendu, utilisation du fallback');
-          throw new Error('Unexpected response format');
-        }
-
-        // ═══ RETOUR SUCCÈS ═══
-        return res.status(200).json({
-          success: true,
-          prompt: generatedPrompt,
-          fallback: false,
-          metadata: {
-            model: MODEL_ID,
-            provider: 'huggingface',
-            attempt: attempt,
-            timestamp: new Date().toISOString()
-          }
-        });
-
-      } catch (fetchError) {
-        console.error(`❌ Erreur tentative ${attempt}:`, fetchError.message);
-        lastError = fetchError;
-
-        if (attempt < maxAttempts) {
-          console.log('⏳ Nouvelle tentative dans 2 secondes...');
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
+    try {
+      // Essaye Hugging Face
+      generatedPrompt = await callHuggingFace(systemPrompt, userInput);
+      console.log('✅ Hugging Face OK');
+      
+    } catch (hfError) {
+      // Fallback local
+      console.warn('⚠️ Hugging Face échoué, fallback local:', hfError.message);
+      generatedPrompt = generateLocalFallback(context, style, tone, tags, customInstructions);
     }
-
-    // ═══ SI TOUTES LES TENTATIVES ONT ÉCHOUÉ ═══
-    console.warn('⚠️ Toutes les tentatives ont échoué, utilisation du fallback');
-    
-    const fallbackPrompt = generateFallbackPrompt(safeTags, safeSubject, safeStyle);
 
     return res.status(200).json({
-      success: true,
-      prompt: fallbackPrompt,
-      fallback: true,
-      metadata: {
-        provider: 'fallback',
-        reason: lastError?.message || 'Unknown error',
-        timestamp: new Date().toISOString()
-      }
+      prompt: generatedPrompt,
+      model: generatedPrompt.includes('Génère un prompt') ? 'fallback' : 'huggingface'
     });
 
   } catch (error) {
-    console.error('💥 Erreur serveur:', error);
-
+    console.error('❌ Erreur globale:', error);
     return res.status(500).json({
-      success: false,
-      error: error.message,
-      fallback: true,
-      prompt: 'An unexpected error occurred.'
+      error: 'Erreur serveur',
+      details: error.message
     });
   }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 🆘 FONCTION FALLBACK (génération locale sans IA)
-// ═══════════════════════════════════════════════════════════════
-
-function generateFallbackPrompt(tags, subject, style) {
-  const tagText = tags.join(', ');
-  const subjectText = subject?.text ? `, featuring ${subject.text}` : '';
-  const styleText = style?.name ? ` in ${style.name} style` : '';
-
-  const qualityTerms = [
-    'highly detailed',
-    'professional quality',
-    'masterpiece',
-    '8k resolution',
-    'photorealistic',
-    'intricate details'
-  ];
-
-  const randomQuality = qualityTerms[Math.floor(Math.random() * qualityTerms.length)];
-
-  return `${tagText}${subjectText}${styleText}, ${randomQuality}, stunning composition, perfect lighting, award-winning photograph`;
-}
+};
