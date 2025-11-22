@@ -1,347 +1,832 @@
-import { useState } from "react";
-import { promptData } from "./data/prompts";
-import { generateEnhancedPrompt } from "./services/promptGenerator";
+import React, { useState } from 'react';
+import { promptData as prompts } from './data/prompts';
+import { generateEnhancedPrompt } from './services/promptGenerator';
+import { generateNegativePrompt } from './utils/negativePromptGenerator';
+import { getConflictingTags, removeConflictingTags } from './utils/tagConflicts';
+import './App.css';
 
-// Composant pour un tag cliquable
-function TagButton({ tag, isSelected, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-        isSelected
-          ? "bg-blue-600 text-white shadow-lg scale-105"
-          : "bg-gray-700 text-gray-200 hover:bg-gray-600"
-      }`}
-    >
-      {tag.label}
-    </button>
-  );
-}
-
-// Composant pour une section de tags
-function TagSection({ title, tags, selectedTags, onToggle }) {
-  return (
-    <div className="mb-8">
-      <h3 className="text-xl font-bold text-white mb-4">{title}</h3>
-      <div className="flex flex-wrap gap-3">
-        {tags?.map((tag, index) => (
-          <TagButton
-            key={index}
-            tag={tag}
-            isSelected={selectedTags.includes(tag.value)}
-            onClick={() => onToggle(tag.value)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default function App() {
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [subjectData, setSubjectData] = useState({
-    type: "",
-    species: "",
-    gender: "",
-    age: "",
+function App() {
+  // ========================================
+  // 📊 STATE MANAGEMENT
+  // ========================================
+  
+  const [selectedTags, setSelectedTags] = useState({
+    subject: [],
+    age: null, // Changed: Now stores { min, max } from slider
+    gender: null, // New: Separated from age
+    species: [],
+    bodyType: [],
+    breastSize: [],
+    buttSize: [],
+    hair: [],
+    eyes: [],
+    facialExpression: [],
+    headwear: [],
+    ears: [],
+    topwear: [],
+    bottomwear: [],
+    legwear: [],
+    footwear: [],
+    accessories: [],
+    pose: [],
+    action: [],
+    viewpoint: [],
+    location: [],
+    timeOfDay: [],
+    lighting: [],
+    weather: [],
+    artist: [],
+    artMedium: [],
+    quality: [],
   });
-  const [generatedPrompt, setGeneratedPrompt] = useState("");
+
+  const [enhancedPrompt, setEnhancedPrompt] = useState('');
+  const [negativePrompt, setNegativePrompt] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [characterCount, setCharacterCount] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [conflictWarning, setConflictWarning] = useState(null); // New: Conflict warnings
 
-  const toggleTag = (value) => {
-    setSelectedTags((prev) =>
-      prev.includes(value)
-        ? prev.filter((tag) => tag !== value)
-        : [...prev, value]
-    );
+  // ========================================
+  // 🎲 SURPRISE ME FEATURE
+  // ========================================
+
+  const surpriseMe = () => {
+    const getRandomItem = (array) => {
+      if (!array || array.length === 0) return null;
+      return array[Math.floor(Math.random() * array.length)].value;
+    };
+
+    const getRandomItems = (array, count = 1) => {
+      if (!array || array.length === 0) return [];
+      const shuffled = [...array].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count).map(item => item.value);
+    };
+
+    const newTags = {
+      subject: [getRandomItem(prompts.subject.character)],
+      age: { min: Math.floor(Math.random() * 50) + 18, max: Math.floor(Math.random() * 20) + 40 }, // Random age range
+      gender: getRandomItem(prompts.subject.gender),
+      species: [getRandomItem(prompts.subject.species)],
+      bodyType: [getRandomItem(prompts.appearance.bodyType)],
+      breastSize: Math.random() > 0.5 ? [getRandomItem(prompts.appearance.breastSize)] : [],
+      buttSize: Math.random() > 0.5 ? [getRandomItem(prompts.appearance.buttSize)] : [],
+      hair: getRandomItems(prompts.appearance.hair, 2),
+      eyes: [getRandomItem(prompts.appearance.eyes)],
+      facialExpression: [getRandomItem(prompts.appearance.facialExpression)],
+      headwear: Math.random() > 0.7 ? [getRandomItem(prompts.appearance.headwear)] : [],
+      ears: Math.random() > 0.8 ? [getRandomItem(prompts.appearance.ears)] : [],
+      topwear: [getRandomItem(prompts.clothing.topwear)],
+      bottomwear: [getRandomItem(prompts.clothing.bottomwear)],
+      legwear: Math.random() > 0.5 ? [getRandomItem(prompts.clothing.legwear)] : [],
+      footwear: [getRandomItem(prompts.clothing.footwear)],
+      accessories: getRandomItems(prompts.clothing.accessories, Math.floor(Math.random() * 2)),
+      pose: [getRandomItem(prompts.composition.pose)],
+      action: Math.random() > 0.5 ? [getRandomItem(prompts.composition.action)] : [],
+      viewpoint: [getRandomItem(prompts.composition.viewpoint)],
+      location: [getRandomItem(prompts.environment.location)],
+      timeOfDay: [getRandomItem(prompts.environment.timeOfDay)],
+      lighting: [getRandomItem(prompts.environment.lighting)],
+      weather: Math.random() > 0.7 ? [getRandomItem(prompts.environment.weather)] : [],
+      artist: getRandomItems(prompts.style.artist, Math.floor(Math.random() * 2) + 1),
+      artMedium: [getRandomItem(prompts.style.artMedium)],
+      quality: getRandomItems(prompts.technical.quality, 3),
+    };
+
+    setSelectedTags(newTags);
+    setConflictWarning(null);
   };
 
-  const handleSubjectChange = (category, value) => {
-    setSubjectData((prev) => ({ ...prev, [category]: value }));
+  // ========================================
+  // 🏷️ TAG SELECTION WITH CONFLICT DETECTION
+  // ========================================
+
+  const handleTagSelect = (category, value) => {
+    setSelectedTags((prev) => {
+      const currentTags = prev[category] || [];
+      let newTags;
+
+      if (currentTags.includes(value)) {
+        // Remove tag
+        newTags = {
+          ...prev,
+          [category]: currentTags.filter((tag) => tag !== value),
+        };
+      } else {
+        // Add tag and check for conflicts
+        const updatedTags = [...currentTags, value];
+        const conflicts = getConflictingTags(category, value, prev);
+
+        if (conflicts.length > 0) {
+          setConflictWarning({
+            newTag: value,
+            conflicts: conflicts,
+          });
+        }
+
+        newTags = removeConflictingTags(category, value, {
+          ...prev,
+          [category]: updatedTags,
+        });
+      }
+
+      return newTags;
+    });
   };
 
-  const generatePrompt = async () => {
-    if (selectedTags.length === 0) {
-      alert("⚠️ Sélectionnez au moins un tag !");
-      return;
-    }
+  // ========================================
+  // 👤 AGE SLIDER (NEW)
+  // ========================================
 
+  const handleAgeChange = (min, max) => {
+    setSelectedTags((prev) => ({
+      ...prev,
+      age: { min, max },
+    }));
+  };
+
+  // ========================================
+  // 🚹 GENDER SELECTION (NEW - Separated from age)
+  // ========================================
+
+  const handleGenderSelect = (value) => {
+    setSelectedTags((prev) => ({
+      ...prev,
+      gender: prev.gender === value ? null : value,
+    }));
+  };
+
+  // ========================================
+  // 🎨 PROMPT GENERATION
+  // ========================================
+
+  const generatePrompt = async (usePro = false) => {
     setIsGenerating(true);
+
     try {
-      const enhanced = await generateEnhancedPrompt(selectedTags, subjectData);
-      setGeneratedPrompt(enhanced);
+      // Build base prompt with deduplication
+      const allKeywords = [];
+      
+      // Add character count prefix
+      if (characterCount > 1) {
+        allKeywords.push(`${characterCount} characters`);
+      }
+
+      // Process subject tags
+      if (selectedTags.subject.length > 0) {
+        allKeywords.push(...selectedTags.subject);
+      }
+
+      // Process age as descriptive text (NEW)
+      if (selectedTags.age) {
+        const { min, max } = selectedTags.age;
+        if (min === max) {
+          allKeywords.push(`${min} years old`);
+        } else {
+          allKeywords.push(`${min}-${max} years old`);
+        }
+      }
+
+      // Process gender (NEW)
+      if (selectedTags.gender) {
+        allKeywords.push(selectedTags.gender);
+      }
+
+      // Process all other categories
+      Object.entries(selectedTags).forEach(([category, tags]) => {
+        if (category !== 'subject' && category !== 'age' && category !== 'gender' && Array.isArray(tags)) {
+          allKeywords.push(...tags);
+        }
+      });
+
+      // Deduplicate keywords (case-insensitive)
+      const uniqueKeywords = [...new Set(allKeywords.map(k => k.toLowerCase()))];
+      
+      let finalPrompt;
+
+      if (usePro) {
+        // Use AI enhancement (local fallback)
+        finalPrompt = await generateEnhancedPrompt(uniqueKeywords, {
+          characterCount,
+          age: selectedTags.age,
+          gender: selectedTags.gender,
+        });
+      } else {
+        // Simple concatenation
+        finalPrompt = uniqueKeywords.join(', ');
+      }
+
+      setEnhancedPrompt(finalPrompt);
+
+      // Generate negative prompt
+      const negative = generateNegativePrompt(selectedTags);
+      setNegativePrompt(negative);
+
     } catch (error) {
-      console.error("Erreur:", error);
-      setGeneratedPrompt(selectedTags.join(", "));
+      console.error('Error generating prompt:', error);
+      setEnhancedPrompt('Error generating prompt. Please try again.');
     } finally {
       setIsGenerating(false);
     }
   };
 
+  // ========================================
+  // 📋 COPY TO CLIPBOARD
+  // ========================================
+
+  const copyToClipboard = (text, type) => {
+    navigator.clipboard.writeText(text);
+    setCopySuccess(`${type} copied!`);
+    setTimeout(() => setCopySuccess(''), 2000);
+  };
+
+  // ========================================
+  // 🎨 RENDER
+  // ========================================
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
-      <div className="max-w-6xl mx-auto">
-        
-        {/* 🆕 NOUVEAU HEADER */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            🎨 Générateur de Prompt
-          </h1>
-          <p className="text-gray-400 text-lg mb-2">
-            Créez des prompts professionnels pour vos générations d'images IA
-          </p>
-          <p className="text-yellow-400 text-sm bg-gray-800 inline-block px-4 py-2 rounded-lg">
-            💡 Astuce : La génération en anglais fonctionne mieux !
-          </p>
+    <div className="app">
+      <header className="app-header">
+        <h1>🎨 AI Art Prompt Generator</h1>
+        <p className="subtitle">Create detailed prompts for Stable Diffusion</p>
+      </header>
+
+      {/* ========================================
+          🔔 MONO-CHARACTER WARNING
+          ======================================== */}
+      {characterCount > 1 && (
+        <div className="info-banner warning">
+          ⚠️ <strong>Multi-character mode:</strong> Stable Diffusion often struggles with multiple characters. 
+          For best results, consider generating one character at a time and compositing in post-production.
+        </div>
+      )}
+
+      {/* ========================================
+          ⚠️ CONFLICT WARNING
+          ======================================== */}
+      {conflictWarning && (
+        <div className="conflict-warning">
+          <strong>⚠️ Conflict detected:</strong> "{conflictWarning.newTag}" conflicts with{' '}
+          {conflictWarning.conflicts.map((c, i) => (
+            <span key={i}>
+              "{c}"{i < conflictWarning.conflicts.length - 1 ? ', ' : ''}
+            </span>
+          ))}
+          . Conflicting tags have been removed.
+          <button onClick={() => setConflictWarning(null)}>✕</button>
+        </div>
+      )}
+
+      <div className="main-content">
+        {/* ========================================
+            🎲 SURPRISE ME BUTTON
+            ======================================== */}
+        <div className="surprise-section">
+          <button className="surprise-button" onClick={surpriseMe}>
+            🎲 Surprise Me!
+          </button>
+          <span className="surprise-hint">Generate a random character</span>
         </div>
 
-        {/* SUJET PRINCIPAL */}
-        <div className="bg-gradient-to-r from-purple-900 to-blue-900 rounded-2xl p-8 shadow-2xl mb-8">
-          <h2 className="text-3xl font-bold text-white mb-6">🎯 Sujet Principal</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-white font-semibold mb-2">Type</label>
-              <select
-                value={subjectData.type}
-                onChange={(e) => handleSubjectChange("type", e.target.value)}
-                className="w-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700"
-              >
-                <option value="">-- Sélectionner --</option>
-                {promptData.subject.type.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
-            </div>
+        {/* ========================================
+            👥 CHARACTER COUNT
+            ======================================== */}
+        <div className="character-count-section">
+          <label>Number of Characters:</label>
+          <div className="counter-controls">
+            <button onClick={() => setCharacterCount(Math.max(1, characterCount - 1))}>-</button>
+            <span className="count-display">{characterCount}</span>
+            <button onClick={() => setCharacterCount(Math.min(5, characterCount + 1))}>+</button>
+          </div>
+        </div>
 
-            {subjectData.type === "person" && (
-              <>
-                <div>
-                  <label className="block text-white font-semibold mb-2">Espèce</label>
-                  <select
-                    value={subjectData.species}
-                    onChange={(e) => handleSubjectChange("species", e.target.value)}
-                    className="w-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700"
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {promptData.subject.species.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </select>
+        {/* ========================================
+            🏷️ TAG CATEGORIES
+            ======================================== */}
+        <div className="categories-container">
+          {/* SUBJECT */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'subject' ? null : 'subject')}>
+              👤 Subject {activeCategory === 'subject' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'subject' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Character Type</h3>
+                  {prompts.subject.character.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.subject.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('subject', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
                 </div>
 
-                <div>
-                  <label className="block text-white font-semibold mb-2">Genre</label>
-                  <select
-                    value={subjectData.gender}
-                    onChange={(e) => handleSubjectChange("gender", e.target.value)}
-                    className="w-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700"
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {promptData.subject.gender.map((g) => (
-                      <option key={g.value} value={g.value}>{g.label}</option>
-                    ))}
-                  </select>
+                {/* ========================================
+                    👤 AGE SLIDER (NEW)
+                    ======================================== */}
+                <div className="subcategory age-slider-section">
+                  <h3>Age Range</h3>
+                  <div className="age-slider-container">
+                    <div className="age-display">
+                      {selectedTags.age ? `${selectedTags.age.min} - ${selectedTags.age.max} years` : 'Not specified'}
+                    </div>
+                    <div className="dual-slider">
+                      <input
+                        type="range"
+                        min="18"
+                        max="80"
+                        value={selectedTags.age?.min || 18}
+                        onChange={(e) => handleAgeChange(
+                          parseInt(e.target.value),
+                          Math.max(parseInt(e.target.value), selectedTags.age?.max || 40)
+                        )}
+                        className="slider slider-min"
+                      />
+                      <input
+                        type="range"
+                        min="18"
+                        max="80"
+                        value={selectedTags.age?.max || 40}
+                        onChange={(e) => handleAgeChange(
+                          Math.min(selectedTags.age?.min || 18, parseInt(e.target.value)),
+                          parseInt(e.target.value)
+                        )}
+                        className="slider slider-max"
+                      />
+                    </div>
+                    <div className="age-labels">
+                      <span>18</span>
+                      <span>80</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-white font-semibold mb-2">Âge</label>
-                  <select
-                    value={subjectData.age}
-                    onChange={(e) => handleSubjectChange("age", e.target.value)}
-                    className="w-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700"
-                  >
-                    <option value="">-- Sélectionner --</option>
-                    {promptData.subject.age.map((a) => (
-                      <option key={a.value} value={a.value}>{a.label}</option>
-                    ))}
-                  </select>
+                {/* ========================================
+                    🚹 GENDER (NEW - Separated)
+                    ======================================== */}
+                <div className="subcategory">
+                  <h3>Gender</h3>
+                  {prompts.subject.gender.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.gender === tag.value ? 'selected' : ''}`}
+                      onClick={() => handleGenderSelect(tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
                 </div>
-              </>
+
+                <div className="subcategory">
+                  <h3>Species</h3>
+                  {prompts.subject.species.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.species.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('species', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* APPEARANCE */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'appearance' ? null : 'appearance')}>
+              💇 Appearance {activeCategory === 'appearance' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'appearance' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Body Type</h3>
+                  {prompts.appearance.bodyType.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.bodyType.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('bodyType', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Breast Size</h3>
+                  {prompts.appearance.breastSize.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.breastSize.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('breastSize', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Butt Size</h3>
+                  {prompts.appearance.buttSize.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.buttSize.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('buttSize', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Hair</h3>
+                  {prompts.appearance.hair.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.hair.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('hair', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Eyes</h3>
+                  {prompts.appearance.eyes.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.eyes.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('eyes', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Facial Expression</h3>
+                  {prompts.appearance.facialExpression.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.facialExpression.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('facialExpression', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Headwear</h3>
+                  {prompts.appearance.headwear.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.headwear.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('headwear', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Ears</h3>
+                  {prompts.appearance.ears.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.ears.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('ears', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* CLOTHING */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'clothing' ? null : 'clothing')}>
+              👗 Clothing {activeCategory === 'clothing' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'clothing' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Topwear</h3>
+                  {prompts.clothing.topwear.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.topwear.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('topwear', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Bottomwear</h3>
+                  {prompts.clothing.bottomwear.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.bottomwear.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('bottomwear', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Legwear</h3>
+                  {prompts.clothing.legwear.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.legwear.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('legwear', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Footwear</h3>
+                  {prompts.clothing.footwear.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.footwear.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('footwear', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Accessories</h3>
+                  {prompts.clothing.accessories.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.accessories.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('accessories', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* COMPOSITION */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'composition' ? null : 'composition')}>
+              🎭 Composition {activeCategory === 'composition' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'composition' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Pose</h3>
+                  {prompts.composition.pose.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.pose.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('pose', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Action</h3>
+                  {prompts.composition.action.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.action.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('action', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Viewpoint</h3>
+                  {prompts.composition.viewpoint.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.viewpoint.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('viewpoint', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ENVIRONMENT */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'environment' ? null : 'environment')}>
+              🌍 Environment {activeCategory === 'environment' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'environment' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Location</h3>
+                  {prompts.environment.location.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.location.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('location', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Time of Day</h3>
+                  {prompts.environment.timeOfDay.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.timeOfDay.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('timeOfDay', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Lighting</h3>
+                  {prompts.environment.lighting.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.lighting.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('lighting', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Weather</h3>
+                  {prompts.environment.weather.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.weather.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('weather', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* STYLE */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'style' ? null : 'style')}>
+              🎨 Style {activeCategory === 'style' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'style' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Artist Style</h3>
+                  {prompts.style.artist.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.artist.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('artist', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="subcategory">
+                  <h3>Art Medium</h3>
+                  {prompts.style.artMedium.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.artMedium.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('artMedium', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* TECHNICAL */}
+          <div className="category-section">
+            <h2 onClick={() => setActiveCategory(activeCategory === 'technical' ? null : 'technical')}>
+              ⚙️ Technical {activeCategory === 'technical' ? '▼' : '▶'}
+            </h2>
+            {activeCategory === 'technical' && (
+              <div className="tags-grid">
+                <div className="subcategory">
+                  <h3>Quality Tags</h3>
+                  {prompts.technical.quality.map((tag) => (
+                    <button
+                      key={tag.value}
+                      className={`tag-button ${selectedTags.quality.includes(tag.value) ? 'selected' : ''}`}
+                      onClick={() => handleTagSelect('quality', tag.value)}
+                    >
+                      {tag.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>
 
-        {/* SECTIONS DE TAGS */}
-        <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
-          <TagSection
-            title="🌟 Qualité"
-            tags={promptData.quality}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="🎨 Style de peinture"
-            tags={promptData.painting?.style}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="✨ Effets"
-            tags={promptData.effects}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <h2 className="text-2xl font-bold text-white mb-6 mt-8">👤 Apparence</h2>
-          
-          <TagSection
-            title="💇 Cheveux"
-            tags={promptData.appearance?.hair}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="👁️ Yeux"
-            tags={promptData.appearance?.eyes}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="😊 Expression faciale"
-            tags={promptData.appearance?.facialExpression}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="👒 Couvre-chef"
-            tags={promptData.appearance?.headwear}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="🐱 Oreilles"
-            tags={promptData.appearance?.ears}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <h2 className="text-2xl font-bold text-white mb-6 mt-8">📸 Composition</h2>
-
-          <TagSection
-            title="📐 Angle"
-            tags={promptData.composition?.angle}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="🖼️ Forme"
-            tags={promptData.composition?.form}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-
-          <TagSection
-            title="📷 Caméra"
-            tags={promptData.composition?.camera}
-            selectedTags={selectedTags}
-            onToggle={toggleTag}
-          />
-        </div>
-
-        {/* BOUTON DE GÉNÉRATION */}
-        <div className="text-center mb-8">
-          <button
-            onClick={generatePrompt}
-            disabled={isGenerating}
-            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
-              isGenerating ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isGenerating ? "⏳ Génération en cours..." : "✨ Générer le Prompt Pro"}
-          </button>
-        </div>
-
-        {/* AFFICHAGE DU PROMPT */}
-        {generatedPrompt && (
-          <div className="bg-gradient-to-r from-green-900 to-teal-900 rounded-2xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              🎯 Votre Prompt Professionnel :
-            </h3>
-            <div className="bg-gray-900 rounded-lg p-6 text-gray-200 font-mono text-sm leading-relaxed">
-              {generatedPrompt}
-            </div>
+        {/* ========================================
+            🎯 PROMPT OUTPUT
+            ======================================== */}
+        <div className="prompt-output">
+          <div className="generate-buttons">
             <button
-              onClick={() => navigator.clipboard.writeText(generatedPrompt)}
-              className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              className="generate-btn"
+              onClick={() => generatePrompt(false)}
+              disabled={isGenerating}
             >
-              📋 Copier
+              {isGenerating ? '⏳ Generating...' : '✨ Generate Prompt'}
+            </button>
+            <button
+              className="generate-btn pro"
+              onClick={() => generatePrompt(true)}
+              disabled={isGenerating}
+            >
+              {isGenerating ? '⏳ Processing...' : '🚀 Generate Prompt Pro'}
             </button>
           </div>
-        )}
 
-        {/* TAGS SÉLECTIONNÉS */}
-        {selectedTags.length > 0 && (
-          <div className="mt-8 bg-gray-800 rounded-2xl p-6 shadow-2xl">
-            <h4 className="text-lg font-bold text-white mb-3">
-              Tags sélectionnés ({selectedTags.length}) :
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {selectedTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 🆕 NOUVEAU FOOTER */}
-        <footer className="mt-16 pt-8 border-t border-gray-700">
-          <div className="text-center">
-            <p className="text-gray-400 mb-4">
-              Créé par <span className="text-white font-semibold">François Menguy</span>
-            </p>
-            
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm">
-              <a
-                href="https://fmenguy.fr"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                🏠 Accueil
-              </a>
-              
-              <span className="hidden sm:inline text-gray-600">|</span>
-              
-              <div className="flex gap-4">
-                <a
-                  href="https://fmenguy.fr/oai/"
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
-                >
-                  OAI
-                </a>
-                <a
-                  href="https://fmenguy.fr/odia/"
-                  className="text-green-400 hover:text-green-300 transition-colors"
-                >
-                  ODIA
-                </a>
-                <a
-                  href="https://fmenguy.fr/ocm/"
-                  className="text-yellow-400 hover:text-yellow-300 transition-colors"
-                >
-                  OCM
-                </a>
+          {enhancedPrompt && (
+            <>
+              <div className="prompt-box">
+                <div className="prompt-header">
+                  <h3>Positive Prompt</h3>
+                  <button
+                    className="copy-btn"
+                    onClick={() => copyToClipboard(enhancedPrompt, 'Positive prompt')}
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+                <textarea
+                  className="prompt-textarea"
+                  value={enhancedPrompt}
+                  onChange={(e) => setEnhancedPrompt(e.target.value)}
+                  rows={6}
+                />
               </div>
-            </div>
 
-            <p className="text-gray-500 text-xs mt-4">
-              © {new Date().getFullYear()} - Tous droits réservés
-            </p>
-          </div>
-        </footer>
+              <div className="prompt-box">
+                <div className="prompt-header">
+                  <h3>Negative Prompt</h3>
+                  <button
+                    className="copy-btn"
+                    onClick={() => copyToClipboard(negativePrompt, 'Negative prompt')}
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+                <textarea
+                  className="prompt-textarea negative"
+                  value={negativePrompt}
+                  onChange={(e) => setNegativePrompt(e.target.value)}
+                  rows={4}
+                />
+              </div>
 
+              {copySuccess && <div className="copy-success">{copySuccess}</div>}
+            </>
+          )}
+        </div>
       </div>
+
+      <footer className="app-footer">
+        <p>Made with ❤️ for AI Artists | v2.0</p>
+      </footer>
     </div>
   );
 }
+
+export default App;
