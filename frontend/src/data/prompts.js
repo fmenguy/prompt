@@ -1,27 +1,19 @@
 // frontend/src/data/prompts.js
 
 export const promptData = {
-  // ============================================
-  // 🎯 SUJET PRINCIPAL
-  // ============================================
   subject: {
-    // ÂGE - Système par catégories
     age: [
       { value: 'young_adult', label: '👤 Young Adult (18-25)' },
       { value: 'adult', label: '👨 Adult (26-40)' },
       { value: 'middle_aged', label: '🧔 Middle-aged (41-55)' },
       { value: 'mature', label: '👴 Mature (56-70)' },
-      { value: 'elder', label: '👵 Elder (70+)' }
+      { value: 'elder', label: '👵 Elder (70+)' },
     ],
-
-    // GENRE
     gender: [
       { value: 'female', label: '♀️ Femme' },
       { value: 'male', label: '♂️ Homme' },
-      { value: 'other', label: '⚧️ Autre' }
+      { value: 'androgynous', label: '⚧️ Autre' },
     ],
-
-    // ESPÈCE
     species: [
       { value: 'human', label: '👤 Human' },
       { value: 'elf', label: '🧝 Elf' },
@@ -70,15 +62,15 @@ export const promptData = {
       { value: 'huge', label: 'Huge' }
     ],
 
-    hair: [
-      // Longueurs
+    hairLength: [
       { value: 'long_hair', label: '💇 Long Hair' },
       { value: 'short_hair', label: '✂️ Short Hair' },
       { value: 'medium_hair', label: '🧑 Medium Hair' },
       { value: 'very_long_hair', label: '💇‍♀️ Very Long Hair' },
       { value: 'bald', label: '⚫ Bald' },
-      
-      // Styles
+    ],
+
+    hairStyle: [
       { value: 'straight_hair', label: 'Straight Hair' },
       { value: 'wavy_hair', label: '🌊 Wavy Hair' },
       { value: 'curly_hair', label: '🌀 Curly Hair' },
@@ -87,18 +79,19 @@ export const promptData = {
       { value: 'bun', label: '🥐 Bun' },
       { value: 'messy_hair', label: '💨 Messy Hair' },
       { value: 'spiky_hair', label: '⚡ Spiky Hair' },
-      
-      // Couleurs
-      { value: 'blonde_hair', label: '👱 Blonde' },
-      { value: 'brown_hair', label: '🟤 Brown' },
-      { value: 'black_hair', label: '⚫ Black' },
-      { value: 'red_hair', label: '🔴 Red' },
-      { value: 'white_hair', label: '⚪ White' },
-      { value: 'silver_hair', label: '⚪ Silver' },
-      { value: 'blue_hair', label: '🔵 Blue' },
-      { value: 'pink_hair', label: '🩷 Pink' },
-      { value: 'purple_hair', label: '🟣 Purple' },
-      { value: 'green_hair', label: '🟢 Green' }
+    ],
+
+    hairColor: [
+      { value: 'blonde', label: '👱 Blonde' },
+      { value: 'brown', label: '🟤 Brown' },
+      { value: 'black', label: '⚫ Black' },
+      { value: 'red', label: '🔴 Red' },
+      { value: 'white', label: '⚪ White' },
+      { value: 'silver', label: '⚪ Silver' },
+      { value: 'blue', label: '🔵 Blue' },
+      { value: 'pink', label: '🩷 Pink' },
+      { value: 'purple', label: '🟣 Purple' },
+      { value: 'green', label: '🟢 Green' },
     ],
 
     eyes: [
@@ -112,7 +105,7 @@ export const promptData = {
       { value: 'purple_eyes', label: '🟣 Purple Eyes' },
       { value: 'golden_eyes', label: '🟡 Golden Eyes' },
       { value: 'glowing_eyes', label: '✨ Glowing Eyes' },
-      { value: 'heterochromia', label: '👁️ Heterochromia' }
+      { value: 'heterochromia', label: '👁️ Heterochromia' },
     ],
 
     facialExpression: [
@@ -125,8 +118,8 @@ export const promptData = {
       { value: 'seductive', label: '😘 Seductive' },
       { value: 'determined', label: '😤 Determined' },
       { value: 'surprised', label: '😲 Surprised' },
-      { value: 'neutral', label: '😑 Neutral' }
-    ]
+      { value: 'neutral', label: '😑 Neutral' },
+    ],
   },
 
   // ============================================
@@ -139,12 +132,12 @@ export const promptData = {
       { value: 'hoodie', label: '🧥 Hoodie' },
       { value: 'sweater', label: '🧶 Sweater' },
       { value: 'tank_top', label: '👚 Tank Top' },
-      
+
       // Formel
       { value: 'suit_jacket', label: '🤵 Suit Jacket' },
       { value: 'blazer', label: '👔 Blazer' },
       { value: 'dress_shirt', label: '👔 Dress Shirt' },
-      
+
       // Fantasy
       { value: 'leather_armor', label: '🛡️ Leather Armor' },
       { value: 'chainmail', label: '⛓️ Chainmail' },
@@ -152,11 +145,11 @@ export const promptData = {
       { value: 'wizard_robe', label: '🧙 Wizard Robe' },
       { value: 'cloak', label: '🧥 Cloak' },
       { value: 'cape', label: '🦸 Cape' },
-      
+
       // Moderne/Sci-fi
       { value: 'tactical_vest', label: '🎖️ Tactical Vest' },
       { value: 'body_armor', label: '🛡️ Body Armor' },
-      
+
       // Élégant
       { value: 'dress', label: '👗 Dress' },
       { value: 'ball_gown', label: '👗 Ball Gown' },
@@ -193,20 +186,20 @@ export const promptData = {
       { value: 'bracelet', label: '⌚ Bracelet' },
       { value: 'crown', label: '👑 Crown' },
       { value: 'tiara', label: '👸 Tiara' },
-      
+
       // Accessoires vêtements
       { value: 'scarf', label: '🧣 Scarf' },
       { value: 'hat', label: '🎩 Hat' },
       { value: 'gloves', label: '🧤 Gloves' },
       { value: 'belt', label: '⚙️ Belt' },
-      
+
       // Armes
       { value: 'sword', label: '⚔️ Sword' },
       { value: 'bow', label: '🏹 Bow' },
       { value: 'staff', label: '🪄 Staff' },
       { value: 'shield', label: '🛡️ Shield' },
       { value: 'dagger', label: '🗡️ Dagger' },
-      
+
       // Moderne
       { value: 'backpack', label: '🎒 Backpack' },
       { value: 'sunglasses', label: '🕶️ Sunglasses' },
@@ -224,18 +217,18 @@ export const promptData = {
       { value: 'sitting', label: '🪑 Sitting' },
       { value: 'kneeling', label: '🧎 Kneeling' },
       { value: 'lying_down', label: '🛏️ Lying Down' },
-      
+
       // Dynamiques
       { value: 'running', label: '🏃 Running' },
       { value: 'jumping', label: '🤸 Jumping' },
       { value: 'flying', label: '🦅 Flying' },
       { value: 'dancing', label: '💃 Dancing' },
-      
+
       // Combat
       { value: 'fighting_stance', label: '🥊 Fighting Stance' },
       { value: 'wielding_weapon', label: '⚔️ Wielding Weapon' },
       { value: 'casting_spell', label: '🪄 Casting Spell' },
-      
+
       // Expressives
       { value: 'arms_crossed', label: '🙅 Arms Crossed' },
       { value: 'hands_on_hips', label: '🙋 Hands on Hips' },
@@ -270,13 +263,13 @@ export const promptData = {
       { value: 'desert', label: '🏜️ Desert' },
       { value: 'cave', label: '🕳️ Cave' },
       { value: 'waterfall', label: '💦 Waterfall' },
-      
+
       // Urbain
       { value: 'city', label: '🏙️ City' },
       { value: 'cyberpunk_city', label: '🌃 Cyberpunk City' },
       { value: 'medieval_town', label: '🏰 Medieval Town' },
       { value: 'rooftop', label: '🏢 Rooftop' },
-      
+
       // Intérieur
       { value: 'castle', label: '🏰 Castle' },
       { value: 'throne_room', label: '👑 Throne Room' },
@@ -284,12 +277,12 @@ export const promptData = {
       { value: 'tavern', label: '🍺 Tavern' },
       { value: 'bedroom', label: '🛏️ Bedroom' },
       { value: 'dungeon', label: '⛓️ Dungeon' },
-      
+
       // Fantasy
       { value: 'magical_realm', label: '✨ Magical Realm' },
       { value: 'floating_island', label: '☁️ Floating Island' },
       { value: 'wizard_tower', label: '🗼 Wizard Tower' },
-      
+
       // Sci-fi
       { value: 'spaceship', label: '🚀 Spaceship' },
       { value: 'space_station', label: '🛸 Space Station' },
@@ -337,30 +330,18 @@ export const promptData = {
   // 🎨 STYLE ARTISTIQUE
   // ============================================
   style: {
-    artist: [
-      { value: 'greg_rutkowski', label: '🎨 Greg Rutkowski' },
-      { value: 'artgerm', label: '🎨 Artgerm' },
-      { value: 'alphonse_mucha', label: '🎨 Alphonse Mucha' },
-      { value: 'wlop', label: '🎨 WLOP' },
-      { value: 'sakimichan', label: '🎨 Sakimichan' },
-      { value: 'loish', label: '🎨 Loish' },
-      { value: 'ross_tran', label: '🎨 Ross Tran' },
-      { value: 'makoto_shinkai', label: '🎨 Makoto Shinkai' },
-      { value: 'studio_ghibli', label: '🎨 Studio Ghibli' }
-    ],
-
     artMedium: [
       // Digital
       { value: 'digital_art', label: '💻 Digital Art' },
       { value: 'digital_painting', label: '🖌️ Digital Painting' },
       { value: '3d_render', label: '🎮 3D Render' },
       { value: 'concept_art', label: '🎨 Concept Art' },
-      
+
       // Traditionnel
       { value: 'oil_painting', label: '🖼️ Oil Painting' },
       { value: 'watercolor', label: '💧 Watercolor' },
       { value: 'pencil_drawing', label: '✏️ Pencil Drawing' },
-      
+
       // Styles
       { value: 'anime_style', label: '🎌 Anime Style' },
       { value: 'manga_style', label: '📖 Manga Style' },

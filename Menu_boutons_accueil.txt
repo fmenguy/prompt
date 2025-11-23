@@ -234,30 +234,19 @@ Environnement
         💨 W
 
 Style artistique
-    Artiste
-        🎨 Greg Rutkowski
-        🎨 Artgerm
-        🎨 Alphonse Mucha
-        🎨 WLOP
-        🎨 Sakimichan
-        🎨 Loish
-        🎨 Ross Tran
-        🎨 Makoto Shinkai
-        🎨 Studio Ghibli
-    Médium
-        💻 Digital Art
-        🖌️ Digital Painting
-        🎮 3D Render
-        🎨 Concept Art
-        🖼️ Oil Painting
-        💧 Watercolor
-        ✏️ Pencil Drawing
-        🎌 Anime Style
-        📖 Manga Style
-        📚 Comic Book Style
-        📷 Photorealistic
-        🔍 Hyperrealistic
-        🎬 Cel Shaded
+    💻 Digital Art
+    🖌️ Digital Painting
+    🎮 3D Render
+    🎨 Concept Art
+    🖼️ Oil Painting
+    💧 Watercolor
+    ✏️ Pencil Drawing
+    🎌 Anime Style
+    📖 Manga Style
+    📚 Comic Book Style
+    📷 Photorealistic
+    🔍 Hyperrealistic
+    🎬 Cel Shaded
 Qualité & Technique
     8K Resolution
     4K Resolution

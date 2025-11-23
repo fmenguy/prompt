@@ -7,39 +7,43 @@ import { getConflictingTags, removeConflictingTags } from './utils/tagConflicts'
 import './App.css';
 
 
-const SINGLE_SELECT_CATEGORIES = [
-  'gender', 'age', 'species', 'bodyType', 'breastSize', 'buttSize',
-  'facialExpression', 'topwear', 'bottomwear', 'footwear',
-  'pose', 'viewpoint', 'location', 'timeOfDay', 'lighting',
-  'weather', 'artMedium'
-];
-
 function App() {
+
   const [selectedTags, setSelectedTags] = useState({
     subject: [],
     age: null,
     gender: null,
-    species: [],
-    bodyType: [],
-    breastSize: [],
-    buttSize: [],
-    hair: [],
-    eyes: [],
-    facialExpression: [],
-    topwear: [],
-    bottomwear: [],
-    footwear: [],
+    species: null,
+    bodyType: null,
+    breastSize: null,
+    buttSize: null,
+    hairLength: null,
+    hairStyle: [],
+    hairColor: null,
+    eyes: null,
+    facialExpression: null,
+    topwear: null,
+    bottomwear: null,
+    footwear: null,
     accessories: [],
-    pose: [],
-    viewpoint: [],
-    location: [],
-    timeOfDay: [],
-    lighting: [],
-    weather: [],
-    artist: [],
-    artMedium: [],
+    pose: null,
+    viewpoint: null,
+    location: null,
+    timeOfDay: null,
+    lighting: null,
+    weather: null,
+    artMedium: null,
     quality: [],
   });
+
+  const SINGLE_SELECT_CATEGORIES = [
+    'gender', 'age', 'species', 'bodyType', 'breastSize', 'buttSize',
+    'hairLength', 'hairColor', 'eyes',
+    'facialExpression', 'topwear', 'bottomwear', 'footwear',
+    'pose', 'viewpoint', 'location', 'timeOfDay', 'lighting',
+    'weather', 'artMedium'
+  ];
+
 
   const [enhancedPrompt, setEnhancedPrompt] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
@@ -55,46 +59,47 @@ function App() {
   };
 
   const surpriseMe = () => {
-    const getRandomItem = (array) => {
-      if (!array || array.length === 0) return null;
-      return array[Math.floor(Math.random() * array.length)].value;
-    };
+    const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)].value;
 
-    const getRandomItems = (array, count = 1) => {
-      if (!array || array.length === 0) return [];
-      const shuffled = [...array].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, count).map(item => item.value);
-    };
+    setSelectedTags({
+      subject: [],
+      age: getRandomItem(prompts.subject.age), // ✅ String
+      gender: getRandomItem(prompts.subject.gender), // ✅ String
+      species: getRandomItem(prompts.subject.species), // ✅ String (CORRECTION)
+      bodyType: getRandomItem(prompts.appearance.bodyType), // ✅ String
+      breastSize: getRandomItem(prompts.appearance.breastSize),
+      buttSize: getRandomItem(prompts.appearance.buttSize),
 
-    const newTags = {
-      subject: [getRandomItem(prompts.subject.character)],
-      age: getRandomItem(prompts.subject.age),
-      gender: getRandomItem(prompts.subject.gender),
-      species: [getRandomItem(prompts.subject.species)],
-      bodyType: [getRandomItem(prompts.appearance.bodyType)],
-      breastSize: Math.random() > 0.5 ? [getRandomItem(prompts.appearance.breastSize)] : [],
-      buttSize: Math.random() > 0.5 ? [getRandomItem(prompts.appearance.buttSize)] : [],
-      hair: getRandomItems(prompts.appearance.hair, 2),
-      eyes: [getRandomItem(prompts.appearance.eyes)],
-      facialExpression: [getRandomItem(prompts.appearance.facialExpression)],
-      topwear: [getRandomItem(prompts.clothing.topwear)],
-      bottomwear: [getRandomItem(prompts.clothing.bottomwear)],
-      footwear: [getRandomItem(prompts.clothing.footwear)],
-      accessories: getRandomItems(prompts.clothing.accessories, Math.floor(Math.random() * 2)),
-      pose: [getRandomItem(prompts.composition.pose)],
-      viewpoint: [getRandomItem(prompts.composition.viewpoint)],
-      location: [getRandomItem(prompts.environment.location)],
-      timeOfDay: [getRandomItem(prompts.environment.timeOfDay)],
-      lighting: [getRandomItem(prompts.environment.lighting)],
-      weather: Math.random() > 0.7 ? [getRandomItem(prompts.environment.weather)] : [],
-      artist: getRandomItems(prompts.style?.artist, Math.floor(Math.random() * 2) + 1),
-      artMedium: [getRandomItem(prompts.style?.artMedium)],
-      quality: getRandomItems(prompts.technical?.quality, 3),
-    };
+      // ✅ CHEVEUX
+      hairLength: getRandomItem(prompts.appearance.hairLength),
+      hairStyle: [getRandomItem(prompts.appearance.hairStyle)], // Multi-select
+      hairColor: getRandomItem(prompts.appearance.hairColor),
 
-    setSelectedTags(newTags);
+      eyes: getRandomItem(prompts.appearance.eyes), // ✅ String
+      facialExpression: getRandomItem(prompts.appearance.facialExpression),
+
+      topwear: getRandomItem(prompts.clothing.topwear),
+      bottomwear: getRandomItem(prompts.clothing.bottomwear),
+      footwear: getRandomItem(prompts.clothing.footwear),
+      accessories: [getRandomItem(prompts.clothing.accessories)],
+
+      pose: getRandomItem(prompts.composition.pose),
+      viewpoint: getRandomItem(prompts.composition.viewpoint),
+      location: getRandomItem(prompts.environment.location),
+      timeOfDay: getRandomItem(prompts.environment.timeOfDay),
+      lighting: getRandomItem(prompts.environment.lighting),
+      weather: getRandomItem(prompts.environment.weather),
+
+      artMedium: getRandomItem(prompts.style.artMedium),
+      quality: [
+        getRandomItem(prompts.quality),
+        getRandomItem(prompts.quality),
+      ],
+    });
+
     setConflictWarning(null);
   };
+
 
   const handleTagSelect = (category, value) => {
     setSelectedTags(prev => {
@@ -369,15 +374,21 @@ function App() {
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
           <h2 className="text-2xl font-bold text-white mb-8">Apparence</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {['bodyType', 'breastSize', 'buttSize', 'hair', 'eyes', 'facialExpression'].map((cat) => (
+
+            {/* ═══════════════════════════════════════════════ */}
+            {/* BOUCLE AUTOMATIQUE POUR LES CATÉGORIES STANDARD */}
+            {/* ═══════════════════════════════════════════════ */}
+            {['bodyType', 'breastSize', 'buttSize', 'hairLength', 'hairStyle', 'hairColor', 'eyes', 'facialExpression'].map((cat) => (
               <div key={cat}>
                 <h3 className="text-xl font-bold text-white mb-4 capitalize">
-                  {cat === 'bodyType' ? 'Morphologie' :
-                    cat === 'breastSize' ? 'Poitrine' :
-                      cat === 'buttSize' ? 'Fessiers' :
-                        cat === 'hair' ? 'Cheveux' :
-                          cat === 'eyes' ? 'Yeux' :
-                            cat === 'facialExpression' ? 'Expression' : cat}
+                  {cat === 'bodyType' ? '💪 Morphologie' :
+                    cat === 'breastSize' ? '🍒 Poitrine' :
+                      cat === 'buttSize' ? '🍑 Fessiers' :
+                        cat === 'hairLength' ? '💇 Longueur Cheveux' :
+                          cat === 'hairStyle' ? '✨ Style Cheveux' :
+                            cat === 'hairColor' ? '🎨 Couleur Cheveux' :
+                              cat === 'eyes' ? '👁️ Yeux' :
+                                cat === 'facialExpression' ? '😊 Expression' : cat}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {(prompts.appearance[cat] || []).map((tag) => (
@@ -385,8 +396,8 @@ function App() {
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
                       className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
-                        ? 'bg-pink-600 text-white shadow-lg scale-105'
-                        : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                          ? 'bg-pink-600 text-white shadow-lg scale-105'
+                          : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
                     >
                       {tag.label}
@@ -397,6 +408,7 @@ function App() {
             ))}
           </div>
         </div>
+
 
         {/* 👗 VÊTEMENTS */}
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
