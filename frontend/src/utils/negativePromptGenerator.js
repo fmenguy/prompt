@@ -1,13 +1,42 @@
 // frontend/src/utils/negativePromptGenerator.js
 
-export function generateNegativePrompt(tags, subject) {
+/**
+ * ✅ Génère le negative prompt basé sur les tags sélectionnés
+ * @param {Array<string>|Object} tagsOrObject - Array de tags OU objet selectedTags complet
+ * @returns {string} Le negative prompt
+ */
+export function generateNegativePrompt(tagsOrObject = {}) {
+  // ✅ GESTION DES 2 FORMATS D'ENTRÉE
+  let tags = [];
+
+  if (Array.isArray(tagsOrObject)) {
+    // Format 1: Array de tags ["elf", "smile", ...]
+    tags = tagsOrObject;
+  } else if (typeof tagsOrObject === 'object' && tagsOrObject !== null) {
+    // Format 2: Objet selectedTags {bodyType: [...], hair: [...], ...}
+    tags = Object.values(tagsOrObject)
+      .filter(value => Array.isArray(value))
+      .flat();
+    
+    // Récupérer aussi les tags simples (age, gender, species...)
+    Object.entries(tagsOrObject).forEach(([value]) => {
+      if (typeof value === 'string' && value) {
+        tags.push(value);
+      } else if (typeof value === 'object' && value?.value) {
+        tags.push(value.value); // Pour les objets {value: 'female', label: 'Female'}
+      }
+    });
+  }
+
+  console.log('🚫 Negative prompt - Tags reçus:', tags);
+
   const negatives = new Set([
     // Qualité générale
     "lowres", "bad anatomy", "bad hands", "text", "error",
     "missing fingers", "extra digit", "fewer digits", "cropped",
     "worst quality", "low quality", "normal quality", "jpeg artifacts",
     "signature", "watermark", "username", "blurry",
-    
+
     // Anatomie
     "deformed", "ugly", "mutation", "mutilated", "extra limbs",
     "poorly drawn hands", "poorly drawn face", "malformed limbs",
@@ -21,19 +50,18 @@ export function generateNegativePrompt(tags, subject) {
 
   // 1. Espèces mutuellement exclusives
   const hasElf = tags.some(t => 
-    t.toLowerCase().includes("elf") || 
-    t.toLowerCase().includes("elven")
+    t?.toLowerCase().includes("elf") || 
+    t?.toLowerCase().includes("elven")
   );
-  
+
   const hasAnimalEars = tags.some(t => 
-    t.toLowerCase().includes("fox ears") || 
-    t.toLowerCase().includes("cat ears") ||
-    t.toLowerCase().includes("wolf ears") ||
-    t.toLowerCase().includes("bunny ears")
+    t?.toLowerCase().includes("fox ears") || 
+    t?.toLowerCase().includes("cat ears") ||
+    t?.toLowerCase().includes("wolf ears") ||
+    t?.toLowerCase().includes("bunny ears")
   );
 
   if (hasElf && !hasAnimalEars) {
-    // Si elf mais pas d'oreilles animales → exclure les oreilles animales
     negatives.add("fox ears");
     negatives.add("cat ears");
     negatives.add("animal ears");
@@ -44,16 +72,15 @@ export function generateNegativePrompt(tags, subject) {
   }
 
   if (hasAnimalEars && !hasElf) {
-    // Si oreilles animales mais pas elf → exclure oreilles d'elfe
     negatives.add("elf ears");
     negatives.add("pointed ears");
   }
 
   // 2. Nombre de personnages
   const hasSolo = tags.some(t => 
-    t.toLowerCase() === "solo" || 
-    t.toLowerCase() === "1girl" ||
-    t.toLowerCase() === "1boy"
+    t?.toLowerCase() === "solo" || 
+    t?.toLowerCase() === "1girl" ||
+    t?.toLowerCase() === "1boy"
   );
 
   if (hasSolo) {
@@ -66,25 +93,23 @@ export function generateNegativePrompt(tags, subject) {
   }
 
   // 3. Expressions contradictoires
-  const hasSmile = tags.some(t => t.toLowerCase().includes("smile"));
-  const hasAngry = tags.some(t => t.toLowerCase().includes("angry"));
+  const hasSmile = tags.some(t => t?.toLowerCase().includes("smile"));
+  const hasAngry = tags.some(t => t?.toLowerCase().includes("angry"));
 
-  if (hasSmile && hasAngry) {
-    // Garder les deux → pas de négation (expression complexe)
-  } else if (hasSmile) {
+  if (hasSmile && !hasAngry) {
     negatives.add("sad");
     negatives.add("crying");
     negatives.add("frown");
-  } else if (hasAngry) {
+  } else if (hasAngry && !hasSmile) {
     negatives.add("laughing");
     negatives.add("happy");
   }
 
   // 4. Vêtements incompatibles
-  const hasArmor = tags.some(t => t.toLowerCase().includes("armor"));
+  const hasArmor = tags.some(t => t?.toLowerCase().includes("armor"));
   const hasNaked = tags.some(t => 
-    t.toLowerCase().includes("naked") || 
-    t.toLowerCase().includes("nude")
+    t?.toLowerCase().includes("naked") || 
+    t?.toLowerCase().includes("nude")
   );
 
   if (hasArmor) {
@@ -98,12 +123,8 @@ export function generateNegativePrompt(tags, subject) {
     negatives.add("fully clothed");
   }
 
-  // ═══════════════════════════════════════════════
-  // PAS DE NÉGATION DE STYLE
-  // ═══════════════════════════════════════════════
-  // Le modèle choisi par l'utilisateur définit déjà le style
-  // "realistic skin" peut coexister avec "anime style"
-  // Pas besoin d'exclure "anime" si "Realism" est présent
-
-  return Array.from(negatives).join(", ");
+  const result = Array.from(negatives).join(", ");
+  console.log('✅ Negative prompt généré:', result);
+  
+  return result;
 }
