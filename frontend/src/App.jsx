@@ -59,46 +59,70 @@ function App() {
   };
 
   const surpriseMe = () => {
-    const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)].value;
+    const getRandomItem = (arr) => {
+      if (!arr || arr.length === 0) return null;
+      return arr[Math.floor(Math.random() * arr.length)].value;
+    };
 
-    setSelectedTags({
-      subject: [],
-      age: getRandomItem(prompts.subject.age), // ✅ String
-      gender: getRandomItem(prompts.subject.gender), // ✅ String
-      species: getRandomItem(prompts.subject.species), // ✅ String (CORRECTION)
-      bodyType: getRandomItem(prompts.appearance.bodyType), // ✅ String
-      breastSize: getRandomItem(prompts.appearance.breastSize),
-      buttSize: getRandomItem(prompts.appearance.buttSize),
+    const getRandomItems = (arr, count = 2) => {
+      if (!arr || arr.length === 0) return [];
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count).map(item => item.value);
+    };
 
-      // ✅ CHEVEUX
+    // ✅ Génération aléatoire selon la structure de prompts.js
+    const randomTags = {
+      // SUJET PRINCIPAL
+      age: getRandomItem(prompts.subject.age),
+      gender: getRandomItem(prompts.subject.gender),
+      species: getRandomItem(prompts.subject.species),
+
+      // APPARENCE
+      bodyType: getRandomItem(prompts.appearance.bodyType),
+      breastSize: Math.random() > 0.5 ? getRandomItem(prompts.appearance.breastSize) : null,
+      buttSize: Math.random() > 0.5 ? getRandomItem(prompts.appearance.buttSize) : null,
       hairLength: getRandomItem(prompts.appearance.hairLength),
-      hairStyle: [getRandomItem(prompts.appearance.hairStyle)], // Multi-select
+      hairStyle: getRandomItems(prompts.appearance.hairStyle, Math.floor(Math.random() * 2) + 1),
       hairColor: getRandomItem(prompts.appearance.hairColor),
-
-      eyes: getRandomItem(prompts.appearance.eyes), // ✅ String
+      eyes: getRandomItem(prompts.appearance.eyes),
       facialExpression: getRandomItem(prompts.appearance.facialExpression),
 
+      // VÊTEMENTS
       topwear: getRandomItem(prompts.clothing.topwear),
       bottomwear: getRandomItem(prompts.clothing.bottomwear),
-      footwear: getRandomItem(prompts.clothing.footwear),
-      accessories: [getRandomItem(prompts.clothing.accessories)],
+      footwear: Math.random() > 0.3 ? getRandomItem(prompts.clothing.footwear) : null,
+      accessories: getRandomItems(prompts.clothing.accessories, Math.floor(Math.random() * 3)),
 
-      pose: getRandomItem(prompts.composition.pose),
-      viewpoint: getRandomItem(prompts.composition.viewpoint),
+      // POSE & VIEWPOINT
+      pose: getRandomItem(prompts.pose),
+      viewpoint: getRandomItem(prompts.viewpoint),
+
+      // ENVIRONNEMENT
       location: getRandomItem(prompts.environment.location),
       timeOfDay: getRandomItem(prompts.environment.timeOfDay),
       lighting: getRandomItem(prompts.environment.lighting),
-      weather: getRandomItem(prompts.environment.weather),
+      weather: Math.random() > 0.5 ? getRandomItem(prompts.environment.weather) : null,
 
+      // STYLE
       artMedium: getRandomItem(prompts.style.artMedium),
-      quality: [
-        getRandomItem(prompts.quality),
-        getRandomItem(prompts.quality),
-      ],
-    });
+      quality: getRandomItems(prompts.style.quality, Math.floor(Math.random() * 3) + 2),
+    };
 
+    // ✅ Nettoyer les valeurs null/undefined
+    const cleanedTags = Object.fromEntries(
+      // eslint-disable-next-line no-unused-vars
+      Object.entries(randomTags).filter(([key, value]) => {
+        if (Array.isArray(value)) return value.length > 0;
+        return value !== null && value !== undefined;
+      })
+    );
+
+    setSelectedTags(cleanedTags);
     setConflictWarning(null);
+
+    console.log('🎲 Surprise Me! Tags générés:', cleanedTags);
   };
+
 
 
   const handleTagSelect = (category, value) => {
@@ -106,43 +130,51 @@ function App() {
       const isSingleSelect = SINGLE_SELECT_CATEGORIES.includes(category);
 
       if (isSingleSelect) {
-        // Sélection unique : on toggle (clic = désélection si déjà sélectionné)
-        const currentValue = prev[category];
-        const newValue = (Array.isArray(currentValue) ? currentValue[0] : currentValue) === value ? null : value;
+        // ✅ Single-select : remplace SANS toggle (sauf si même valeur)
+        const currentValue = Array.isArray(prev[category]) ? prev[category][0] : prev[category];
 
-        // Vérification conflit uniquement si on ajoute
-        if (newValue) {
-          const conflicts = getConflictingTags(category, value, prev);
-          if (conflicts.length > 0) {
-            setConflictWarning({
-              newTag: value,
-              conflicts: conflicts.map(c => c.tag),
-            });
-          }
-          const cleaned = removeConflictingTags(category, value, prev);
-          return { ...cleaned, [category]: newValue };
+        // ✅ Si on clique sur le même bouton, on désélectionne
+        if (currentValue === value) {
+          return { ...prev, [category]: null };
         }
 
-        return { ...prev, [category]: null };
+        // ✅ Vérification des conflits
+        const conflicts = getConflictingTags(category, value, prev);
+        if (conflicts.length > 0) {
+          setConflictWarning({
+            newTag: value,
+            conflicts: conflicts.map(c => c.tag),
+          });
+        }
+
+        // ✅ Supprime les conflits et applique la nouvelle valeur
+        const cleaned = removeConflictingTags(prev, conflicts);
+        return { ...cleaned, [category]: value };
       } else {
-        // Multiselect (artist, quality, accessories)
+        // ✅ Multi-select : toggle (ajoute/retire)
         const current = prev[category] || [];
-        if (current.includes(value)) {
-          return { ...prev, [category]: current.filter(v => v !== value) };
+        const isSelected = current.includes(value);
+
+        if (isSelected) {
+          // Retire le tag
+          return { ...prev, [category]: current.filter(t => t !== value) };
         } else {
+          // Ajoute le tag
           const conflicts = getConflictingTags(category, value, prev);
           if (conflicts.length > 0) {
             setConflictWarning({
               newTag: value,
               conflicts: conflicts.map(c => c.tag),
             });
+            const cleaned = removeConflictingTags(prev, conflicts);
+            return { ...cleaned, [category]: [...(cleaned[category] || []), value] };
           }
-          const cleaned = removeConflictingTags(category, value, prev);
-          return { ...cleaned, [category]: [...(cleaned[category] || []), value] };
+          return { ...prev, [category]: [...current, value] };
         }
       }
     });
   };
+
 
 
   const generatePrompt = async () => {
@@ -307,7 +339,7 @@ function App() {
 
         {/* 👤 SUJET PRINCIPAL */}
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8 mt-8">
-          <h2 className="text-3xl font-bold text-white mb-6">Sujet Principal</h2>
+          <h2 className="text-3xl font-bold text-white mb-6 text-center">Sujet Principal</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {/* Âge */}
@@ -348,24 +380,23 @@ function App() {
               </div>
             </div>
 
-            {/* Espèce */}
+            {/* ESPÈCE - 3 COLONNES */}
             <div>
-              <label className="block text-white font-semibold mb-3">Espèce</label>
-              <div className="flex flex-wrap gap-2">
-                {prompts.subject.species.map((tag) => (
+              <h3 className="text-xl font-semibold text-purple-300 mb-3">Espèce</h3>
+              <div className="grid grid-cols-6 gap-6">
+                {prompts.subject.species.map((spec) => (
                   <button
-                    key={tag.value}
-                    onClick={() => handleTagSelect('species', tag.value)}
-                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected('species', tag.value)
-                      ? 'bg-green-600 text-white shadow-lg scale-105'
-                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                    key={spec.value}
+                    onClick={() => handleTagSelect('species', spec.value)}
+                    className={`tag-button ${selectedTags.species === spec.value ? 'active' : ''
                       }`}
                   >
-                    {tag.label}
+                    {spec.label}
                   </button>
                 ))}
               </div>
             </div>
+
 
           </div>
         </div>
@@ -396,8 +427,8 @@ function App() {
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
                       className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
-                          ? 'bg-pink-600 text-white shadow-lg scale-105'
-                          : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                        ? 'bg-pink-600 text-white shadow-lg scale-105'
+                        : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
                     >
                       {tag.label}
@@ -505,7 +536,6 @@ function App() {
           <h2 className="text-2xl font-bold text-white mb-8">Style artistique</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">Artiste</h3>
               <div className="flex flex-wrap gap-2">
                 {(prompts.style?.artist || []).map((tag) => (
                   <button
@@ -523,7 +553,6 @@ function App() {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">Médium</h3>
               <div className="flex flex-wrap gap-2">
                 {(prompts.style?.artMedium || []).map((tag) => (
                   <button

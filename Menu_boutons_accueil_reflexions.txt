@@ -13,22 +13,14 @@ Sujet Principal
         ♀️ Femme
         ♂️ Homme
         ⚧️ Autre
-    Espèce > cliquer sur un autre bouton renvoi une erreur ligne 122 de tagConflicts.js mais pas pour tout, j'ai vu que surtout Human, Demon, Cyborg, Angel bugé (pourquoi ceux là aucune idée)
+    Espèce
         👤 Human
         🧝 Elf
-        🧝‍♀️ Dark Elf
         🧔 Dwarf
         👹 Orc
-        😈 Tiefling
-        🐉 Dragonborn
         🧛 Vampire
-        🐺 Werewolf
         🧚 Fairy
-        👿 Demon
-        👼 Angel
         🤖 Cyborg
-        🦾 Android
-        👽 Alien
 Apparence
     Morphologie > cliquer sur un autre bouton renvoi une erreur ligne 122 de tagConflicts.js
         🌿 Slender

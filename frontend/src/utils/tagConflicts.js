@@ -1,166 +1,177 @@
-// frontend/src/data/tagConflicts.js
+// frontend/src/utils/tagConflicts.js
 
+/**
+ * ✅ Définition des conflits entre tags
+ * Structure: { catégorie: { tag: [tags_conflictuels] } }
+ */
 export const tagConflicts = {
-  // ═══════════════════════════════════════════════
-  // 🧬 GENRE (strictement exclusif)
-  // ═══════════════════════════════════════════════
-  gender: {
-    male: ['female', 'girl', 'woman', 'feminine'],
-    female: ['male', 'boy', 'man', 'masculine'],
-    androgynous: [],
-  },
+  // ══════════════════════════════════════════
+  // APPARENCE PHYSIQUE
+  // ══════════════════════════════════════════
+species: {
+  'human': ['elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'cyborg', 'android', 'alien'],
+  'elf': ['human', 'dark_elf', 'dwarf', 'orc', 'dragonborn', 'demon', 'cyborg', 'android', 'alien'],
+  'dark_elf': ['human', 'elf', 'dwarf', 'orc', 'angel', 'cyborg', 'android'],
+  'dwarf': ['human', 'elf', 'dark_elf', 'fairy', 'cyborg', 'android', 'alien'],
+  'orc': ['human', 'elf', 'fairy', 'angel', 'cyborg', 'android'],
+  'tiefling': ['human', 'angel', 'cyborg', 'android'],
+  'dragonborn': ['human', 'elf', 'cyborg', 'android', 'alien'],
+  'vampire': ['human', 'werewolf', 'angel', 'cyborg', 'android'],
+  'werewolf': ['human', 'vampire', 'cyborg', 'android', 'alien'],
+  'fairy': ['human', 'dwarf', 'orc', 'cyborg', 'android', 'alien'],
+  'demon': ['human', 'elf', 'dark_elf', 'angel', 'cyborg', 'android'],
+  'angel': ['dark_elf', 'orc', 'tiefling', 'vampire', 'demon', 'cyborg', 'android'],
+  'cyborg': ['human', 'elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'android', 'alien'],
+  'android': ['human', 'elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'cyborg', 'alien'],
+  'alien': ['human', 'dwarf', 'dragonborn', 'werewolf', 'fairy', 'cyborg', 'android']
+},
 
-  // ═══════════════════════════════════════════════
-  // 👥 ESPÈCES (certaines incompatibles avec genre)
-  // ═══════════════════════════════════════════════
-  species: {
-    human: [],
-    elf: [],
-    dark_elf: [],
-    dwarf: [],
-    orc: [],
-    tiefling: [],
-    dragonborn: [],
-    vampire: [],
-    werewolf: [],
-    fairy: [],
-    demon: [],
-    angel: [],
-    cyborg: [],
-    android: [],
-    alien: [],
-  },
 
-  // ═══════════════════════════════════════════════
-  // 💪 MORPHOLOGIE (mutuellement exclusif)
-  // ═══════════════════════════════════════════════
   bodyType: {
-    slender: ['muscular', 'voluptuous', 'curvy'],
-    athletic: ['voluptuous'],
-    muscular: ['slender', 'petite', 'voluptuous'],
-    curvy: ['slender', 'petite'],
-    petite: ['tall', 'muscular', 'curvy'],
-    tall: ['petite'],
-    average: [],
-    voluptuous: ['slender', 'petite', 'athletic', 'muscular'],
+    'petite': ['muscular', 'curvy', 'athletic', 'voluptuous'],
+    'slim': ['muscular', 'curvy', 'voluptuous'],
+    'athletic': ['petite', 'voluptuous'],
+    'curvy': ['petite', 'slim', 'muscular'],
+    'muscular': ['petite', 'slim', 'curvy', 'voluptuous'],
+    'voluptuous': ['petite', 'slim', 'athletic', 'muscular'],
+    'chubby': ['slim', 'muscular', 'athletic']
   },
 
-  // ═══════════════════════════════════════════════
-  // 💇 LONGUEUR CHEVEUX (mutuellement exclusif)
-  // ═══════════════════════════════════════════════
+  breastSize: {
+    'flat_chest': ['large_breasts', 'huge_breasts'],
+    'small_breasts': ['huge_breasts'],
+    'medium_breasts': ['flat_chest', 'huge_breasts'],
+    'large_breasts': ['flat_chest', 'small_breasts'],
+    'huge_breasts': ['flat_chest', 'small_breasts', 'medium_breasts']
+  },
+
+  buttSize: {
+    'small_butt': ['huge_ass'],
+    'medium_butt': ['huge_ass'],
+    'large_butt': ['small_butt'],
+    'huge_ass': ['small_butt', 'medium_butt']
+  },
+
+  // ══════════════════════════════════════════
+  // CHEVEUX
+  // ══════════════════════════════════════════
   hairLength: {
-    bald: ['long_hair', 'short_hair', 'medium_hair', 'very_long_hair'],
-    long_hair: ['bald', 'short_hair', 'very_long_hair'],
-    short_hair: ['bald', 'long_hair', 'very_long_hair'],
-    medium_hair: ['bald', 'very_long_hair'],
-    very_long_hair: ['bald', 'short_hair', 'medium_hair'],
+    'bald': ['short_hair', 'medium_hair', 'long_hair', 'very_long_hair'],
+    'short_hair': ['bald', 'long_hair', 'very_long_hair'],
+    'medium_hair': ['bald', 'very_long_hair'],
+    'long_hair': ['bald', 'short_hair'],
+    'very_long_hair': ['bald', 'short_hair', 'medium_hair']
   },
 
-  // ═══════════════════════════════════════════════
-  // 💇 STYLE CHEVEUX (peut coexister)
-  // ═══════════════════════════════════════════════
-  hairStyle: {
-    straight_hair: ['curly_hair', 'wavy_hair'],
-    wavy_hair: ['straight_hair', 'curly_hair'],
-    curly_hair: ['straight_hair', 'wavy_hair'],
-    braided_hair: [],
-    ponytail: ['bun'],
-    bun: ['ponytail'],
-    messy_hair: [],
-    spiky_hair: [],
-  },
-
-  // ═══════════════════════════════════════════════
-  // 🎨 COULEUR CHEVEUX (mutuellement exclusif)
-  // ═══════════════════════════════════════════════
   hairColor: {
-    blonde: ['brown', 'black', 'red', 'white', 'silver', 'blue', 'pink', 'purple', 'green'],
-    brown: ['blonde', 'black', 'red', 'white', 'silver', 'blue', 'pink', 'purple', 'green'],
-    black: ['blonde', 'brown', 'red', 'white', 'silver', 'blue', 'pink', 'purple', 'green'],
-    red: ['blonde', 'brown', 'black', 'white', 'silver', 'blue', 'pink', 'purple', 'green'],
-    white: ['blonde', 'brown', 'black', 'red', 'silver', 'blue', 'pink', 'purple', 'green'],
-    silver: ['blonde', 'brown', 'black', 'red', 'white', 'blue', 'pink', 'purple', 'green'],
-    blue: ['blonde', 'brown', 'black', 'red', 'white', 'silver', 'pink', 'purple', 'green'],
-    pink: ['blonde', 'brown', 'black', 'red', 'white', 'silver', 'blue', 'purple', 'green'],
-    purple: ['blonde', 'brown', 'black', 'red', 'white', 'silver', 'blue', 'pink', 'green'],
-    green: ['blonde', 'brown', 'black', 'red', 'white', 'silver', 'blue', 'pink', 'purple'],
+    'blonde_hair': ['brown_hair', 'black_hair', 'red_hair', 'white_hair', 'gray_hair'],
+    'brown_hair': ['blonde_hair', 'black_hair', 'red_hair', 'white_hair'],
+    'black_hair': ['blonde_hair', 'brown_hair', 'white_hair', 'gray_hair'],
+    'red_hair': ['blonde_hair', 'brown_hair', 'black_hair'],
+    'white_hair': ['blonde_hair', 'brown_hair', 'black_hair'],
+    'gray_hair': ['blonde_hair', 'black_hair'],
+    // Couleurs fantaisie compatibles entre elles
+    'blue_hair': [],
+    'pink_hair': [],
+    'green_hair': [],
+    'purple_hair': []
   },
 
-  // ═══════════════════════════════════════════════
-  // 👁️ YEUX (mutuellement exclusif sauf heterochromia)
-  // ═══════════════════════════════════════════════
+  // ══════════════════════════════════════════
+  // VISAGE
+  // ══════════════════════════════════════════
   eyes: {
-    blue_eyes: ['green_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    green_eyes: ['blue_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    brown_eyes: ['blue_eyes', 'green_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    hazel_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    gray_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'hazel_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    amber_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
-    red_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'purple_eyes', 'golden_eyes'],
-    purple_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'golden_eyes'],
-    golden_eyes: ['blue_eyes', 'green_eyes', 'brown_eyes', 'hazel_eyes', 'gray_eyes', 'amber_eyes', 'red_eyes', 'purple_eyes'],
-    glowing_eyes: [],
-    heterochromia: [], // ✅ Pas de conflits
+    'blue_eyes': ['brown_eyes', 'green_eyes', 'red_eyes', 'purple_eyes', 'yellow_eyes'],
+    'brown_eyes': ['blue_eyes', 'green_eyes', 'red_eyes', 'purple_eyes'],
+    'green_eyes': ['blue_eyes', 'brown_eyes', 'red_eyes'],
+    'red_eyes': ['blue_eyes', 'brown_eyes', 'green_eyes'],
+    'purple_eyes': ['blue_eyes', 'brown_eyes'],
+    'yellow_eyes': ['blue_eyes'],
+    'heterochromia': [] // Compatible avec tout
   },
 
-  // ═══════════════════════════════════════════════
-  // 🎭 EXPRESSIONS (peuvent coexister modérément)
-  // ═══════════════════════════════════════════════
   facialExpression: {
-    smiling: ['angry', 'sad'],
-    serious: [],
-    angry: ['smiling', 'playful', 'seductive'],
-    sad: ['smiling', 'playful'],
-    playful: ['serious', 'angry', 'sad'],
-    mysterious: [],
-    seductive: ['angry'],
-    determined: [],
-    surprised: [],
-    neutral: [],
+    'smiling': ['crying', 'angry', 'sad', 'frowning'],
+    'laughing': ['crying', 'angry', 'sad', 'frowning'],
+    'crying': ['smiling', 'laughing', 'happy'],
+    'angry': ['smiling', 'laughing', 'happy'],
+    'sad': ['smiling', 'laughing', 'happy'],
+    'surprised': [],
+    'embarrassed': [],
+    'seductive': ['angry', 'crying'],
+    'happy': ['crying', 'angry', 'sad'],
+    'neutral': [],
+    'frowning': ['smiling', 'laughing']
   },
 
-  // ═══════════════════════════════════════════════
-  // 🌦️ MÉTÉO (certains incompatibles)
-  // ═══════════════════════════════════════════════
-  weather: {
-    clear_sky: ['rain', 'storm', 'snow', 'fog', 'mist'],
-    cloudy: ['clear_sky'],
-    rain: ['clear_sky', 'snow'],
-    storm: ['clear_sky', 'snow'],
-    snow: ['rain', 'storm', 'clear_sky'],
-    fog: ['clear_sky'],
-    mist: ['clear_sky'],
-    windy: [],
-  },
-
-  // ═══════════════════════════════════════════════
-  // 👕 VÊTEMENTS (certains incompatibles)
-  // ═══════════════════════════════════════════════
+  // ══════════════════════════════════════════
+  // VÊTEMENTS
+  // ══════════════════════════════════════════
   topwear: {
-    dress: ['suit_jacket', 'blazer'],
-    ball_gown: ['suit_jacket', 'blazer', 'hoodie'],
-    suit_jacket: ['dress', 'ball_gown', 'hoodie'],
-    blazer: ['dress', 'ball_gown', 'hoodie'],
+    'naked_upper': ['t-shirt', 'dress', 'hoodie', 'armor', 'kimono', 'suit'],
+    'armor': ['naked_upper', 'dress', 't-shirt'],
+    'dress': ['armor', 't-shirt', 'hoodie', 'naked_upper']
   },
+
+  bottomwear: {
+    'naked_lower': ['pants', 'skirt', 'shorts', 'dress'],
+    'pants': ['naked_lower', 'skirt', 'dress'],
+    'skirt': ['naked_lower', 'pants', 'shorts'],
+    'shorts': ['naked_lower', 'skirt', 'pants']
+  },
+
+  // ══════════════════════════════════════════
+  // POSES
+  // ══════════════════════════════════════════
+  pose: {
+    'standing': ['sitting', 'lying_down', 'kneeling', 'crouching'],
+    'sitting': ['standing', 'lying_down', 'running', 'jumping'],
+    'lying_down': ['standing', 'sitting', 'running', 'jumping'],
+    'kneeling': ['standing', 'lying_down'],
+    'crouching': ['standing', 'lying_down'],
+    'running': ['sitting', 'lying_down'],
+    'jumping': ['sitting', 'lying_down']
+  },
+
+  // ══════════════════════════════════════════
+  // ENVIRONNEMENT
+  // ══════════════════════════════════════════
+  timeOfDay: {
+    'day': ['night', 'sunset'],
+    'night': ['day', 'sunset'],
+    'sunset': ['day', 'night'],
+    'sunrise': ['night']
+  },
+
+  weather: {
+    'sunny': ['rainy', 'snowy', 'cloudy'],
+    'rainy': ['sunny', 'snowy'],
+    'snowy': ['sunny', 'rainy'],
+    'cloudy': ['sunny']
+  }
 };
 
 /**
- * ✅ Détecte les conflits pour un nouveau tag (VERSION SÉCURISÉE)
+ * ✅ Vérifie les conflits pour un nouveau tag
+ * @param {string} category - Catégorie du tag
+ * @param {string} newTag - Nouveau tag à ajouter
+ * @param {Object} selectedTags - Tags actuellement sélectionnés
+ * @returns {Array} Liste des conflits [{category, tag}, ...]
  */
 export function getConflictingTags(category, newTag, selectedTags) {
-  const conflicts = [];
+  const conflicts = []; // ✅ TOUJOURS un array
 
   // ✅ Vérifier que la catégorie existe
   if (!tagConflicts[category]) {
     console.warn(`⚠️ Catégorie "${category}" non définie dans tagConflicts`);
-    return conflicts;
+    return conflicts; // ✅ Retourne array vide
   }
 
   const categoryConflicts = tagConflicts[category];
   
   // ✅ Vérifier que le tag a des conflits définis
   if (!categoryConflicts[newTag]) {
-    return conflicts; // Pas de conflits = OK
+    return conflicts; // ✅ Pas de conflits = array vide
   }
 
   const conflictList = categoryConflicts[newTag];
@@ -178,21 +189,32 @@ export function getConflictingTags(category, newTag, selectedTags) {
     }
   });
 
-  return conflicts;
+  return conflicts; // ✅ TOUJOURS retourne un array
 }
 
 /**
  * ✅ Supprime les tags en conflit
+ * @param {Object} selectedTags - Tags sélectionnés
+ * @param {Array} conflicts - Liste des conflits [{category, tag}, ...]
+ * @returns {Object} selectedTags mis à jour
  */
 export function removeConflictingTags(selectedTags, conflicts) {
+  // ✅ VÉRIFICATION DE SÉCURITÉ
+  if (!Array.isArray(conflicts)) {
+    console.error('❌ removeConflictingTags: conflicts doit être un array, reçu:', typeof conflicts);
+    return selectedTags; // ✅ Retourne l'original sans modification
+  }
+
   const updated = { ...selectedTags };
 
   conflicts.forEach(({ category, tag }) => {
     const current = updated[category];
     
     if (Array.isArray(current)) {
+      // Multi-select: retire le tag du tableau
       updated[category] = current.filter(t => t !== tag);
     } else if (current === tag) {
+      // Single-select: met à null
       updated[category] = null;
     }
   });

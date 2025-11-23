@@ -148,13 +148,28 @@ function generateSmartFallback(tags, subject) {
     parts.push(species);
   }
 
-  // 4. Apparence physique
-  ['eyes', 'hair', 'bodyType', 'breastSize', 'buttSize', 'facialExpression'].forEach(cat => {
-    const values = safeArray(tags[cat]);
-    if (values.length) parts.push(...values);
+
+  // 4. Apparence physique - Yeux
+  const eyeColor = safeFirst(tags.eyes);
+  if (eyeColor) parts.push(eyeColor);
+
+  // 5. Apparence physique - Cheveux
+  const hairLength = safeFirst(tags.hairLength);
+  if (hairLength) parts.push(hairLength);
+
+  const hairStyles = safeArray(tags.hairStyle);
+  if (hairStyles.length) parts.push(...hairStyles);
+
+  const hairColor = safeFirst(tags.hairColor);
+  if (hairColor) parts.push(hairColor);
+
+  // 6. Apparence physique - Corps
+  ['bodyType', 'breastSize', 'buttSize', 'facialExpression'].forEach(cat => {
+    const value = safeFirst(tags[cat]);
+    if (value) parts.push(value);
   });
 
-  // 5. Vêtements
+  // 7. Vêtements
   const clothing = [];
   ['topwear', 'bottomwear', 'footwear'].forEach(cat => {
     const val = safeFirst(tags[cat]);
@@ -164,9 +179,10 @@ function generateSmartFallback(tags, subject) {
     parts.push('wearing ' + clothing.join(', '));
   }
 
-  // 6. Accessoires (multiselect)
-  if (tags.accessories?.length) {
-    parts.push(...tags.accessories);
+  // 8. Accessoires (multiselect)
+  const accessories = safeArray(tags.accessories);
+  if (accessories.length) {
+    parts.push(...accessories);
   }
 
   // 7. Pose & Composition

@@ -12,19 +12,12 @@ Sujet Principal
     Espèce
         👤 Human
         🧝 Elf
-        🧝‍♀️ Dark Elf
         🧔 Dwarf
         👹 Orc
-        😈 Tiefling
-        🐉 Dragonborn
         🧛 Vampire
-        🐺 Werewolf
         🧚 Fairy
-        👿 Demon
-        👼 Angel
         🤖 Cyborg
-        🦾 Android
-        👽 Alien
+
 Apparence
     Morphologie
         🌿 Slender

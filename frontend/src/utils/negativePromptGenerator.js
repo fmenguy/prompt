@@ -6,29 +6,37 @@
  * @returns {string} Le negative prompt
  */
 export function generateNegativePrompt(tagsOrObject = {}) {
+  // ═══════════════════════════════════════════════
   // ✅ GESTION DES 2 FORMATS D'ENTRÉE
+  // ═══════════════════════════════════════════════
   let tags = [];
+  let structuredTags = {}; // ✅ NOUVEAU : Pour accès direct aux catégories
 
   if (Array.isArray(tagsOrObject)) {
     // Format 1: Array de tags ["elf", "smile", ...]
     tags = tagsOrObject;
   } else if (typeof tagsOrObject === 'object' && tagsOrObject !== null) {
-    // Format 2: Objet selectedTags {bodyType: [...], hair: [...], ...}
-    tags = Object.values(tagsOrObject)
-      .filter(value => Array.isArray(value))
-      .flat();
+    // Format 2: Objet selectedTags {gender: 'female', hairLength: 'long_hair', ...}
+    structuredTags = tagsOrObject; // ✅ Garde l'objet structuré
     
-    // Récupérer aussi les tags simples (age, gender, species...)
-    Object.entries(tagsOrObject).forEach(([value]) => {
-      if (typeof value === 'string' && value) {
+    // Flatten tous les tags dans un array
+    // eslint-disable-next-line no-unused-vars
+    Object.entries(tagsOrObject).forEach(([key, value]) => { // ✅ CORRECTION : [key, value]
+      if (Array.isArray(value)) {
+        // Multi-select: ['ponytail', 'bangs']
+        tags.push(...value);
+      } else if (typeof value === 'string' && value) {
+        // Single-select: 'female', 'long_hair'
         tags.push(value);
       } else if (typeof value === 'object' && value?.value) {
-        tags.push(value.value); // Pour les objets {value: 'female', label: 'Female'}
+        // Objet {value: 'female', label: 'Female'}
+        tags.push(value.value);
       }
     });
   }
 
   console.log('🚫 Negative prompt - Tags reçus:', tags);
+  console.log('🚫 Tags structurés:', structuredTags);
 
   const negatives = new Set([
     // Qualité générale
@@ -92,20 +100,61 @@ export function generateNegativePrompt(tagsOrObject = {}) {
     negatives.add("group");
   }
 
-  // 3. Expressions contradictoires
-  const hasSmile = tags.some(t => t?.toLowerCase().includes("smile"));
-  const hasAngry = tags.some(t => t?.toLowerCase().includes("angry"));
+  // ═══════════════════════════════════════════════
+  // ✅ 3. EXPRESSIONS - VERSION CORRIGÉE
+  // ═══════════════════════════════════════════════
+  const facialExpression = structuredTags.facialExpression || '';
+  const hasSmile = 
+    facialExpression.toLowerCase().includes("smile") ||
+    tags.some(t => t?.toLowerCase().includes("smile"));
+  
+  const hasAngry = 
+    facialExpression.toLowerCase().includes("angry") ||
+    tags.some(t => t?.toLowerCase().includes("angry"));
 
   if (hasSmile && !hasAngry) {
     negatives.add("sad");
     negatives.add("crying");
     negatives.add("frown");
+    negatives.add("angry");
   } else if (hasAngry && !hasSmile) {
+    negatives.add("smiling");
     negatives.add("laughing");
     negatives.add("happy");
+    negatives.add("grinning");
   }
 
-  // 4. Vêtements incompatibles
+  // ═══════════════════════════════════════════════
+  // ✅ 4. CHEVEUX - GESTION DES 3 CATÉGORIES
+  // ═══════════════════════════════════════════════
+  const hairLength = structuredTags.hairLength || '';
+  const hairColor = structuredTags.hairColor || '';
+
+  // Si cheveux courts → exclure cheveux longs
+  if (hairLength.includes('short')) {
+    negatives.add("long hair");
+    negatives.add("very long hair");
+  }
+
+  // Si cheveux longs → exclure cheveux courts
+  if (hairLength.includes('long') || hairLength.includes('very_long')) {
+    negatives.add("short hair");
+    negatives.add("bald");
+  }
+
+  // Si une couleur de cheveux est définie → exclure les autres couleurs principales
+  const hairColors = ['blonde', 'brown', 'black', 'red', 'white', 'blue', 'pink', 'green'];
+  if (hairColor) {
+    hairColors.forEach(color => {
+      if (!hairColor.toLowerCase().includes(color)) {
+        negatives.add(`${color} hair`);
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════
+  // 5. VÊTEMENTS
+  // ═══════════════════════════════════════════════
   const hasArmor = tags.some(t => t?.toLowerCase().includes("armor"));
   const hasNaked = tags.some(t => 
     t?.toLowerCase().includes("naked") || 
@@ -121,10 +170,12 @@ export function generateNegativePrompt(tagsOrObject = {}) {
   if (hasNaked) {
     negatives.add("armor");
     negatives.add("fully clothed");
+    negatives.add("dress");
+    negatives.add("shirt");
   }
 
   const result = Array.from(negatives).join(", ");
   console.log('✅ Negative prompt généré:', result);
-  
+
   return result;
 }
