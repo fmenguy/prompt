@@ -246,20 +246,23 @@ function App() {
   // ========================================
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
+      <div className="max-w-6xl mx-auto">
         
         {/* ========================================
             📱 HEADER
             ======================================== */}
-        <header className="text-center mb-8 md:mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            🎨 AI Art Prompt Generator
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-white mb-4">
+            🎨 Générateur de Prompt
           </h1>
-          <p className="text-lg md:text-xl text-blue-200">
-            Create detailed prompts for Stable Diffusion
+          <p className="text-gray-400 text-lg mb-2">
+            Créez des prompts professionnels pour vos générations d'images IA
           </p>
-        </header>
+          <p className="text-yellow-400 text-sm bg-gray-800 inline-block px-4 py-2 rounded-lg">
+            💡 Astuce : La génération en anglais fonctionne mieux !
+          </p>
+        </div>
 
         {/* ========================================
             ⚠️ MULTI-CHARACTER WARNING
@@ -341,439 +344,405 @@ function App() {
             ======================================== */}
         <div className="space-y-4 mb-8">
           
-          {/* ========================================
-              👤 SUBJECT
-              ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
-            <button
-              onClick={() => setActiveCategory(activeCategory === 'subject' ? null : 'subject')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
-            >
-              <span>👤 Subject</span>
-              <span className="text-2xl">{activeCategory === 'subject' ? '▼' : '▶'}</span>
-            </button>
-            
-            {activeCategory === 'subject' && (
-              <div className="p-4 md:p-6 space-y-6">
-                
-                {/* Character Type */}
-                <div>
-                  <h3 className="text-white font-semibold mb-3 text-sm md:text-base">Character Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {prompts.subject.character.map((tag) => (
-                      <button
-                        key={tag.value}
-                        onClick={() => handleTagSelect('subject', tag.value)}
-                        className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                          selectedTags.subject.includes(tag.value)
-                            ? 'bg-blue-500 text-white shadow-lg scale-105'
-                            : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                        }`}
-                      >
-                        {tag.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+         <div className="bg-gradient-to-r from-purple-900 to-blue-900 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-3xl font-bold text-white mb-6">Sujet Principal</h2>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {/* Character Type */}
+    <div>
+      <label className="block text-white font-semibold mb-2">Type</label>
+      <div className="flex flex-wrap gap-2">
+        {prompts.subject.character.map((tag) => (
+          <button
+            key={tag.value}
+            onClick={() => handleTagSelect('subject', tag.value)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              selectedTags.subject.includes(tag.value)
+                ? 'bg-blue-600 text-white shadow-lg scale-105'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
+    </div>
 
-                {/* Age Slider */}
-                <div>
-                  <h3 className="text-white font-semibold mb-3 text-sm md:text-base">Age Range</h3>
-                  <div className="bg-white/5 rounded-lg p-4">
-                    <div className="text-white text-center mb-4 font-bold text-base md:text-lg">
-                      {selectedTags.age 
-                        ? `${selectedTags.age.min} - ${selectedTags.age.max} years` 
-                        : 'Not specified'}
-                    </div>
-                    <div className="relative h-2 bg-white/20 rounded-full mb-2">
-                      <input
-                        type="range"
-                        min="18"
-                        max="80"
-                        value={selectedTags.age?.min || 18}
-                        onChange={(e) => handleAgeChange(
-                          parseInt(e.target.value),
-                          Math.max(parseInt(e.target.value), selectedTags.age?.max || 40)
-                        )}
-                        className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer slider-thumb"
-                      />
-                      <input
-                        type="range"
-                        min="18"
-                        max="80"
-                        value={selectedTags.age?.max || 40}
-                        onChange={(e) => handleAgeChange(
-                          Math.min(selectedTags.age?.min || 18, parseInt(e.target.value)),
-                          parseInt(e.target.value)
-                        )}
-                        className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer slider-thumb"
-                      />
-                    </div>
-                    <div className="flex justify-between text-blue-200 text-xs md:text-sm">
-                      <span>18</span>
-                      <span>80</span>
-                    </div>
-                  </div>
-                </div>
+    {/* Age Slider - GARDÉ de la version main mais stylisé comme l’ancien */}
+    <div>
+      <label className="block text-white font-semibold mb-2">Âge</label>
+      <div className="bg-gray-800 rounded-lg p-4">
+        <div className="text-white text-center mb-3 font-bold">
+          {selectedTags.age ? `${selectedTags.age.min}-${selectedTags.age.max} ans` : 'Non défini'}
+        </div>
+        <input
+          type="range"
+          min="18"
+          max="80"
+          value={selectedTags.age?.min || 18}
+          onChange={(e) => handleAgeChange(parseInt(e.target.value), selectedTags.age?.max || 40)}
+          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+        />
+        <input
+          type="range"
+          min="18"
+          max="80"
+          value={selectedTags.age?.max || 40}
+          onChange={(e) => handleAgeChange(selectedTags.age?.min || 18, parseInt(e.target.value))}
+          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider mt-2"
+        />
+        <div className="flex justify-between text-gray-400 text-xs mt-2">
+          <span>18</span>
+          <span>80</span>
+        </div>
+      </div>
+    </div>
 
-                {/* Gender */}
-                <div>
-                  <h3 className="text-white font-semibold mb-3 text-sm md:text-base">Gender</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {prompts.subject.gender.map((tag) => (
-                      <button
-                        key={tag.value}
-                        onClick={() => handleGenderSelect(tag.value)}
-                        className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                          selectedTags.gender === tag.value
-                            ? 'bg-purple-500 text-white shadow-lg scale-105'
-                            : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                        }`}
-                      >
-                        {tag.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+    {/* Gender */}
+    <div>
+      <label className="block text-white font-semibold mb-2">Genre</label>
+      <div className="flex flex-wrap gap-2">
+        {prompts.subject.gender.map((tag) => (
+          <button
+            key={tag.value}
+            onClick={() => handleGenderSelect(tag.value)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              selectedTags.gender === tag.value
+                ? 'bg-purple-600 text-white shadow-lg scale-105'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
+    </div>
 
-                {/* Species */}
-                <div>
-                  <h3 className="text-white font-semibold mb-3 text-sm md:text-base">Species</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {prompts.subject.species.map((tag) => (
-                      <button
-                        key={tag.value}
-                        onClick={() => handleTagSelect('species', tag.value)}
-                        className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                          selectedTags.species.includes(tag.value)
-                            ? 'bg-green-500 text-white shadow-lg scale-105'
-                            : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                        }`}
-                      >
-                        {tag.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+    {/* Species */}
+    <div>
+      <label className="block text-white font-semibold mb-2">Espèce</label>
+      <div className="flex flex-wrap gap-2">
+        {prompts.subject.species.map((tag) => (
+          <button
+            key={tag.value}
+            onClick={() => handleTagSelect('species', tag.value)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              selectedTags.species.includes(tag.value)
+                ? 'bg-green-600 text-white shadow-lg scale-105'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
 
           {/* ========================================
               💇 APPEARANCE
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
+          <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-2xl font-bold text-white mb-8">Apparence</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {['bodyType', 'breastSize', 'buttSize', 'hair', 'eyes', 'facialExpression', 'headwear', 'ears'].map((cat) => (
+      <div key={cat}>
+        <h3 className="text-xl font-bold text-white mb-4 capitalize">
+          {cat.replace(/([A-Z])/g, ' $1').trim()}
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {prompts.appearance[cat]?.map((tag) => (
             <button
-              onClick={() => setActiveCategory(activeCategory === 'appearance' ? null : 'appearance')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
+              key={tag.value}
+              onClick={() => handleTagSelect(cat, tag.value)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                selectedTags[cat]?.includes(tag.value)
+                  ? 'bg-pink-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+              }`}
             >
-              <span>💇 Appearance</span>
-              <span className="text-2xl">{activeCategory === 'appearance' ? '▼' : '▶'}</span>
+              {tag.label}
             </button>
-            
-            {activeCategory === 'appearance' && (
-              <div className="p-4 md:p-6 space-y-6">
-                {['bodyType', 'breastSize', 'buttSize', 'hair', 'eyes', 'facialExpression', 'headwear', 'ears'].map(
-                  (subcategory) => (
-                    <div key={subcategory}>
-                      <h3 className="text-white font-semibold mb-3 text-sm md:text-base capitalize">
-                        {subcategory.replace(/([A-Z])/g, ' $1').trim()}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {prompts.appearance[subcategory]?.map((tag) => (
-                          <button
-                            key={tag.value}
-                            onClick={() => handleTagSelect(subcategory, tag.value)}
-                            className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                              selectedTags[subcategory]?.includes(tag.value)
-                                ? 'bg-pink-500 text-white shadow-lg scale-105'
-                                : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                            }`}
-                          >
-                            {tag.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            )}
-          </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* ========================================
               👗 CLOTHING
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
+          <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-2xl font-bold text-white mb-8">Vêtements</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {['topwear', 'bottomwear', 'legwear', 'footwear', 'accessories'].map((cat) => (
+      <div key={cat}>
+        <h3 className="text-xl font-bold text-white mb-4 capitalize">
+          {cat === 'topwear' ? 'Haut' :
+           cat === 'bottomwear' ? 'Bas' :
+           cat === 'legwear' ? 'Jambes' :
+           cat === 'footwear' ? 'Chaussures' :
+           cat === 'accessories' ? 'Accessoires' : cat}
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {prompts.clothing[cat]?.map((tag) => (
             <button
-              onClick={() => setActiveCategory(activeCategory === 'clothing' ? null : 'clothing')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
+              key={tag.value}
+              onClick={() => handleTagSelect(cat, tag.value)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                selectedTags[cat]?.includes(tag.value)
+                  ? 'bg-indigo-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+              }`}
             >
-              <span>👗 Clothing</span>
-              <span className="text-2xl">{activeCategory === 'clothing' ? '▼' : '▶'}</span>
+              {tag.label}
             </button>
-            
-            {activeCategory === 'clothing' && (
-              <div className="p-4 md:p-6 space-y-6">
-                {['topwear', 'bottomwear', 'legwear', 'footwear', 'accessories'].map((subcategory) => (
-                  <div key={subcategory}>
-                    <h3 className="text-white font-semibold mb-3 text-sm md:text-base capitalize">
-                      {subcategory.replace(/([A-Z])/g, ' $1').trim()}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {prompts.clothing[subcategory]?.map((tag) => (
-                        <button
-                          key={tag.value}
-                          onClick={() => handleTagSelect(subcategory, tag.value)}
-                          className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                            selectedTags[subcategory]?.includes(tag.value)
-                              ? 'bg-indigo-500 text-white shadow-lg scale-105'
-                              : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                          }`}
-                        >
-                          {tag.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* ========================================
               📐 COMPOSITION
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
+          <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-2xl font-bold text-white mb-8">Composition</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {['pose', 'action', 'viewpoint'].map((cat) => (
+      <div key={cat}>
+        <h3 className="text-xl font-bold text-white mb-4 capitalize">
+          {cat === 'pose' ? 'Pose' :
+           cat === 'action' ? 'Action' :
+           cat === 'viewpoint' ? 'Point de vue' : cat}
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {prompts.composition[cat]?.map((tag) => (
             <button
-              onClick={() => setActiveCategory(activeCategory === 'composition' ? null : 'composition')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
+              key={tag.value}
+              onClick={() => handleTagSelect(cat, tag.value)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                selectedTags[cat]?.includes(tag.value)
+                  ? 'bg-cyan-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+              }`}
             >
-              <span>📐 Composition</span>
-              <span className="text-2xl">{activeCategory === 'composition' ? '▼' : '▶'}</span>
+              {tag.label}
             </button>
-            
-            {activeCategory === 'composition' && (
-              <div className="p-4 md:p-6 space-y-6">
-                {['pose', 'action', 'viewpoint'].map((subcategory) => (
-                  <div key={subcategory}>
-                    <h3 className="text-white font-semibold mb-3 text-sm md:text-base capitalize">
-                      {subcategory}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {prompts.composition[subcategory]?.map((tag) => (
-                        <button
-                          key={tag.value}
-                          onClick={() => handleTagSelect(subcategory, tag.value)}
-                          className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                            selectedTags[subcategory]?.includes(tag.value)
-                              ? 'bg-cyan-500 text-white shadow-lg scale-105'
-                              : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                          }`}
-                        >
-                          {tag.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* ========================================
               🌍 ENVIRONMENT
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
+          <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-2xl font-bold text-white mb-8">Environnement</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {['location', 'timeOfDay', 'lighting', 'weather'].map((cat) => (
+      <div key={cat}>
+        <h3 className="text-xl font-bold text-white mb-4 capitalize">
+          {cat === 'location' ? 'Lieu' :
+           cat === 'timeOfDay' ? 'Moment de la journée' :
+           cat === 'lighting' ? 'Éclairage' :
+           cat === 'weather' ? 'Météo' : cat}
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {prompts.environment[cat]?.map((tag) => (
             <button
-              onClick={() => setActiveCategory(activeCategory === 'environment' ? null : 'environment')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
+              key={tag.value}
+              onClick={() => handleTagSelect(cat, tag.value)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                selectedTags[cat]?.includes(tag.value)
+                  ? 'bg-teal-600 text-white shadow-lg scale-105'
+                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+              }`}
             >
-              <span>🌍 Environment</span>
-              <span className="text-2xl">{activeCategory === 'environment' ? '▼' : '▶'}</span>
+              {tag.label}
             </button>
-            
-            {activeCategory === 'environment' && (
-              <div className="p-4 md:p-6 space-y-6">
-                {['location', 'timeOfDay', 'lighting', 'weather'].map((subcategory) => (
-                  <div key={subcategory}>
-                    <h3 className="text-white font-semibold mb-3 text-sm md:text-base capitalize">
-                      {subcategory.replace(/([A-Z])/g, ' $1').trim()}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {prompts.environment[subcategory]?.map((tag) => (
-                        <button
-                          key={tag.value}
-                          onClick={() => handleTagSelect(subcategory, tag.value)}
-                          className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                            selectedTags[subcategory]?.includes(tag.value)
-                              ? 'bg-teal-500 text-white shadow-lg scale-105'
-                              : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                          }`}
-                        >
-                          {tag.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* ========================================
               🎨 STYLE
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
-            <button
-              onClick={() => setActiveCategory(activeCategory === 'style' ? null : 'style')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
-            >
-              <span>🎨 Style</span>
-              <span className="text-2xl">{activeCategory === 'style' ? '▼' : '▶'}</span>
-            </button>
-            
-            {activeCategory === 'style' && (
-              <div className="p-4 md:p-6 space-y-6">
-                {['artist', 'artMedium'].map((subcategory) => (
-                  <div key={subcategory}>
-                    <h3 className="text-white font-semibold mb-3 text-sm md:text-base capitalize">
-                      {subcategory.replace(/([A-Z])/g, ' $1').trim()}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {prompts.style[subcategory]?.map((tag) => (
-                        <button
-                          key={tag.value}
-                          onClick={() => handleTagSelect(subcategory, tag.value)}
-                          className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                            selectedTags[subcategory]?.includes(tag.value)
-                              ? 'bg-orange-500 text-white shadow-lg scale-105'
-                              : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                          }`}
-                        >
-                          {tag.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
+  <h2 className="text-2xl font-bold text-white mb-8">Style artistique</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div>
+      <h3 className="text-xl font-bold text-white mb-4">Artiste</h3>
+      <div className="flex flex-wrap gap-3">
+        {prompts.style.artist?.map((tag) => (
+          <button
+            key={tag.value}
+            onClick={() => handleTagSelect('artist', tag.value)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              selectedTags.artist?.includes(tag.value)
+                ? 'bg-orange-600 text-white shadow-lg scale-105'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <h3 className="text-xl font-bold text-white mb-4">Médium artistique</h3>
+      <div className="flex flex-wrap gap-3">
+        {prompts.style.artMedium?.map((tag) => (
+          <button
+            key={tag.value}
+            onClick={() => handleTagSelect('artMedium', tag.value)}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              selectedTags.artMedium?.includes(tag.value)
+                ? 'bg-amber-600 text-white shadow-lg scale-105'
+                : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+            }`}
+          >
+            {tag.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
 
           {/* ========================================
               ⚙️ TECHNICAL
               ======================================== */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden">
-            <button
-              onClick={() => setActiveCategory(activeCategory === 'technical' ? null : 'technical')}
-              className="w-full px-4 md:px-6 py-4 text-left text-white font-bold text-lg md:text-xl flex justify-between items-center hover:bg-white/20 transition-colors"
-            >
-              <span>⚙️ Technical</span>
-              <span className="text-2xl">{activeCategory === 'technical' ? '▼' : '▶'}</span>
-            </button>
-            
-            {activeCategory === 'technical' && (
-              <div className="p-4 md:p-6">
-                <h3 className="text-white font-semibold mb-3 text-sm md:text-base">Quality Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {prompts.technical.quality.map((tag) => (
-                    <button
-                      key={tag.value}
-                      onClick={() => handleTagSelect('quality', tag.value)}
-                      className={`px-3 md:px-4 py-2 rounded-lg font-medium transition-all text-sm md:text-base ${
-                        selectedTags.quality.includes(tag.value)
-                          ? 'bg-yellow-500 text-white shadow-lg scale-105'
-                          : 'bg-white/20 text-blue-100 hover:bg-white/30'
-                      }`}
-                    >
-                      {tag.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-12">
+  <h2 className="text-2xl font-bold text-white mb-8">Qualité & Technique</h2>
+  <div className="flex flex-wrap gap-3">
+    {prompts.technical.quality.map((tag) => (
+      <button
+        key={tag.value}
+        onClick={() => handleTagSelect('quality', tag.value)}
+        className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+          selectedTags.quality.includes(tag.value)
+            ? 'bg-yellow-500 text-black shadow-lg scale-105'
+            : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+        }`}
+      >
+        {tag.label}
+      </button>
+    ))}
+  </div>
+</div>
+       {/* ======================================== */}
+{/*          PROMPT POSITIF & NÉGATIF        */}
+{/* ======================================== */}
+{enhancedPrompt && (
+  <div className="space-y-8">
+
+    {/* Prompt Positif */}
+    <div className="bg-gradient-to-r from-green-900 to-teal-900 rounded-2xl p-8 shadow-2xl">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-bold text-white">Prompt Positif</h3>
+        <button
+          onClick={() => copyToClipboard(enhancedPrompt, 'Prompt positif')}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+        >
+          Copier
+        </button>
+      </div>
+      <div className="bg-gray-900 rounded-lg p-6 text-gray-200 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words">
+        {enhancedPrompt}
+      </div>
+    </div>
+
+    {/* Prompt Négatif */}
+    {negativePrompt && (
+      <div className="bg-gradient-to-r from-red-900 to-rose-900 rounded-2xl p-8 shadow-2xl">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-2xl font-bold text-white">Prompt Négatif</h3>
+          <button
+            onClick={() => copyToClipboard(negativePrompt, 'Prompt négatif')}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+          >
+            Copier
+          </button>
         </div>
-
-        {/* ========================================
-            🎯 PROMPT OUTPUT
-            ======================================== */}
-        <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 md:p-8 shadow-2xl">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <button
-              onClick={() => generatePrompt(false)}
-              disabled={isGenerating}
-              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 md:py-4 px-6 rounded-xl shadow-lg transition-all"
-            >
-              {isGenerating ? '⏳ Generating...' : '✨ Generate Prompt'}
-            </button>
-            <button
-              onClick={() => generatePrompt(true)}
-              disabled={isGenerating}
-              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 md:py-4 px-6 rounded-xl shadow-lg transition-all"
-            >
-              {isGenerating ? '⏳ Processing...' : '🚀 Generate Prompt Pro'}
-            </button>
-          </div>
-
-          {enhancedPrompt && (
-            <>
-              {/* Positive Prompt */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-white font-bold text-lg md:text-xl">Positive Prompt</h3>
-                  <button
-                    onClick={() => copyToClipboard(enhancedPrompt, 'Positive prompt')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm md:text-base"
-                  >
-                    📋 Copy
-                  </button>
-                </div>
-                <textarea
-                  value={enhancedPrompt}
-                  onChange={(e) => setEnhancedPrompt(e.target.value)}
-                  rows={6}
-                  className="w-full bg-white/5 text-white border-2 border-white/20 rounded-xl p-4 focus:border-blue-400 focus:outline-none font-mono text-sm"
-                />
-              </div>
-
-              {/* Negative Prompt */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-white font-bold text-lg md:text-xl">Negative Prompt</h3>
-                  <button
-                    onClick={() => copyToClipboard(negativePrompt, 'Negative prompt')}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm md:text-base"
-                  >
-                    📋 Copy
-                  </button>
-                </div>
-                <textarea
-                  value={negativePrompt}
-                  onChange={(e) => setNegativePrompt(e.target.value)}
-                  rows={4}
-                  className="w-full bg-white/5 text-white border-2 border-red-400/40 rounded-xl p-4 focus:border-red-400 focus:outline-none font-mono text-sm"
-                />
-              </div>
-
-              {/* Copy Success Message */}
-              {copySuccess && (
-                <div className="mt-4 bg-green-500/20 border-2 border-green-500 rounded-lg p-3 text-green-100 text-center animate-pulse">
-                  {copySuccess}
-                </div>
-              )}
-            </>
-          )}
+        <div className="bg-gray-900 rounded-lg p-6 text-gray-200 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words">
+          {negativePrompt}
         </div>
       </div>
+    )}
+
+    {/* Message de confirmation copie */}
+    {copySuccess && (
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/90 text-green-400 px-8 py-4 rounded-xl text-xl font-bold animate-pulse z-50">
+        {copySuccess}
+      </div>
+    )}
+  </div>
+)}
 
       {/* ========================================
-          📄 FOOTER
-          ======================================== */}
-      <footer className="text-center mt-12 text-blue-200 pb-8">
-        <p className="text-sm md:text-base">Made with ❤️ for AI Artists | v2.0</p>
-      </footer>
+    FOOTER – version du commit 39808021b1480240f8638d7318cd417265861067
+    ======================================== */}
+<footer className="mt-16 pt-8 border-t border-gray-700">
+  <div className="text-center">
+    <p className="text-gray-400 mb-4">
+      Créé par <span className="text-white font-semibold">François Menguy</span>
+    </p>
+    
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm">
+      <a
+        href="https://fmenguy.fr"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-400 hover:text-blue-300 transition-colors"
+      >
+        Accueil
+      </a>
+      
+      <span className="hidden sm:inline text-gray-600">|</span>
+      
+      <div className="flex gap-6">
+        <a
+          href="https://fmenguy.fr/oai/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:text-purple-300 transition-colors font-medium"
+        >
+          OAI
+        </a>
+        <a
+          href="https://fmenguy.fr/odia/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-400 hover:text-green-300 transition-colors font-medium"
+        >
+          ODIA
+        </a>
+        <a
+          href="https://fmenguy.fr/ocm/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium"
+        >
+          OCM
+        </a>
+      </div>
+    </div>
+
+    <p className="text-gray-500 text-xs mt-6">
+      © {new Date().getFullYear()} - Tous droits réservés
+    </p>
+  </div>
+</footer>
     </div>
   );
 }
