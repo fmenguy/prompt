@@ -5,35 +5,6 @@ export const promptData = {
   // 🎯 SUJET PRINCIPAL
   // ============================================
   subject: {
-    // Type de personnage
-    character: [
-      { value: 'woman', label: '👩 Woman' },
-      { value: 'man', label: '👨 Man' },
-      { value: 'person', label: '👤 Person' },
-      { value: 'girl', label: '👧 Girl' },
-      { value: 'boy', label: '👦 Boy' },
-      { value: 'warrior', label: '⚔️ Warrior' },
-      { value: 'mage', label: '🧙 Mage' },
-      { value: 'knight', label: '🛡️ Knight' },
-      { value: 'archer', label: '🏹 Archer' },
-      { value: 'assassin', label: '🗡️ Assassin' },
-      { value: 'princess', label: '👸 Princess' },
-      { value: 'prince', label: '🤴 Prince' },
-      { value: 'queen', label: '👑 Queen' },
-      { value: 'king', label: '👑 King' },
-      { value: 'witch', label: '🧙‍♀️ Witch' },
-      { value: 'wizard', label: '🧙‍♂️ Wizard' },
-      { value: 'angel', label: '👼 Angel' },
-      { value: 'demon', label: '😈 Demon' },
-      { value: 'vampire', label: '🧛 Vampire' },
-      { value: 'elf', label: '🧝 Elf' },
-      { value: 'cyborg', label: '🤖 Cyborg' },
-      { value: 'alien', label: '👽 Alien' },
-      { value: 'pirate', label: '🏴‍☠️ Pirate' },
-      { value: 'ninja', label: '🥷 Ninja' },
-      { value: 'samurai', label: '🗾 Samurai' }
-    ],
-
     // ÂGE - Système par catégories
     age: [
       { value: 'young_adult', label: '👤 Young Adult (18-25)' },
@@ -45,9 +16,9 @@ export const promptData = {
 
     // GENRE
     gender: [
-      { value: 'female', label: '♀️ Female' },
-      { value: 'male', label: '♂️ Male' },
-      { value: 'androgynous', label: '⚧️ Androgynous' }
+      { value: 'female', label: '♀️ Femme' },
+      { value: 'male', label: '♂️ Homme' },
+      { value: 'other', label: '⚧️ Autre' }
     ],
 
     // ESPÈCE

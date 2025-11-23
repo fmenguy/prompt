@@ -144,22 +144,26 @@ export function getConflictingTags(category, newTag, selectedTags) {
   return conflicts;
 }
 
-/**
- * ✅ Retire les tags en conflit
- * @param {Object} selectedTags - Tags actuellement sélectionnés
- * @param {Array<Object>} conflicts - Liste des conflits [{category, tag}]
- * @returns {Object} Nouveaux selectedTags sans conflits
- */
-export function removeConflictingTags(selectedTags, conflicts) {
+export function removeConflictingTags(category, newTag, selectedTags) {
+  // D'abord détecter les conflits
+  const conflicts = getConflictingTags(category, newTag, selectedTags);
+  
+  // Si pas de conflits, retourner tel quel
+  if (conflicts.length === 0) {
+    return selectedTags;
+  }
+
+  // Créer une copie et retirer les conflits
   const newTags = { ...selectedTags };
 
-  conflicts.forEach(({ category, tag }) => {
-    if (Array.isArray(newTags[category])) {
-      newTags[category] = newTags[category].filter(t => t !== tag);
-    } else if (newTags[category] === tag) {
-      newTags[category] = null;
+  conflicts.forEach(({ category: conflictCat, tag }) => {
+    if (Array.isArray(newTags[conflictCat])) {
+      newTags[conflictCat] = newTags[conflictCat].filter(t => t !== tag);
+    } else if (newTags[conflictCat] === tag) {
+      newTags[conflictCat] = null;
     }
   });
 
   return newTags;
 }
+

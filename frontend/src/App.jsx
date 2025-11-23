@@ -6,6 +6,14 @@ import { generateNegativePrompt } from './utils/negativePromptGenerator';
 import { getConflictingTags, removeConflictingTags } from './utils/tagConflicts';
 import './App.css';
 
+
+const SINGLE_SELECT_CATEGORIES = [
+  'gender', 'age', 'species', 'bodyType', 'breastSize', 'buttSize',
+  'facialExpression', 'topwear', 'bottomwear', 'footwear',
+  'pose', 'viewpoint', 'location', 'timeOfDay', 'lighting',
+  'weather', 'artMedium'
+];
+
 function App() {
   const [selectedTags, setSelectedTags] = useState({
     subject: [],
@@ -37,6 +45,14 @@ function App() {
   const [negativePrompt, setNegativePrompt] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
   const [conflictWarning, setConflictWarning] = useState(null);
+
+  const isTagSelected = (category, value) => {
+    const selected = selectedTags[category];
+    if (Array.isArray(selected)) {
+      return selected.includes(value);
+    }
+    return selected === value;
+  };
 
   const surpriseMe = () => {
     const getRandomItem = (array) => {
@@ -82,35 +98,43 @@ function App() {
 
   const handleTagSelect = (category, value) => {
     setSelectedTags(prev => {
-      // Cas spéciaux (valeur unique)
-      if (category === 'age' || category === 'gender') {
-        return { ...prev, [category]: prev[category] === value ? null : value };
-      }
+      const isSingleSelect = SINGLE_SELECT_CATEGORIES.includes(category);
 
-      // Multi-sélection
-      const currentValues = prev[category] || [];
+      if (isSingleSelect) {
+        // Sélection unique : on toggle (clic = désélection si déjà sélectionné)
+        const currentValue = prev[category];
+        const newValue = (Array.isArray(currentValue) ? currentValue[0] : currentValue) === value ? null : value;
 
-      if (currentValues.includes(value)) {
-        // Retirer le tag
-        return { ...prev, [category]: currentValues.filter(v => v !== value) };
-      } else {
-        // Ajouter le tag et vérifier les conflits
-        const conflicts = getConflictingTags(category, value, prev);
-
-        if (conflicts.length > 0) {
-          setConflictWarning({
-            newTag: value,
-            conflicts: conflicts,
-          });
+        // Vérification conflit uniquement si on ajoute
+        if (newValue) {
+          const conflicts = getConflictingTags(category, value, prev);
+          if (conflicts.length > 0) {
+            setConflictWarning({
+              newTag: value,
+              conflicts: conflicts.map(c => c.tag),
+            });
+          }
+          const cleaned = removeConflictingTags(category, value, prev);
+          return { ...cleaned, [category]: newValue };
         }
 
-        // Supprimer les tags en conflit avant d'ajouter le nouveau
-        const cleanedTags = removeConflictingTags(category, value, prev);
-
-        return {
-          ...cleanedTags,
-          [category]: [...(cleanedTags[category] || []), value]
-        };
+        return { ...prev, [category]: null };
+      } else {
+        // Multiselect (artist, quality, accessories)
+        const current = prev[category] || [];
+        if (current.includes(value)) {
+          return { ...prev, [category]: current.filter(v => v !== value) };
+        } else {
+          const conflicts = getConflictingTags(category, value, prev);
+          if (conflicts.length > 0) {
+            setConflictWarning({
+              newTag: value,
+              conflicts: conflicts.map(c => c.tag),
+            });
+          }
+          const cleaned = removeConflictingTags(category, value, prev);
+          return { ...cleaned, [category]: [...(cleaned[category] || []), value] };
+        }
       }
     });
   };
@@ -281,25 +305,6 @@ function App() {
           <h2 className="text-3xl font-bold text-white mb-6">Sujet Principal</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            {/* Type */}
-            <div>
-              <label className="block text-white font-semibold mb-3">Type</label>
-              <div className="flex flex-wrap gap-2">
-                {prompts.subject.character.map((tag) => (
-                  <button
-                    key={tag.value}
-                    onClick={() => handleTagSelect('subject', tag.value)}
-                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags.subject || []).includes(tag.value)
-                      ? 'bg-blue-600 text-white shadow-lg scale-105'
-                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                      }`}
-                  >
-                    {tag.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Âge */}
             <div>
               <label className="block text-white font-semibold mb-3">Âge</label>
@@ -346,7 +351,7 @@ function App() {
                   <button
                     key={tag.value}
                     onClick={() => handleTagSelect('species', tag.value)}
-                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags.species || []).includes(tag.value)
+                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected('species', tag.value)
                       ? 'bg-green-600 text-white shadow-lg scale-105'
                       : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                       }`}
@@ -379,7 +384,7 @@ function App() {
                     <button
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
-                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags[cat] || []).includes(tag.value)
+                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
                         ? 'bg-pink-600 text-white shadow-lg scale-105'
                         : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
@@ -410,7 +415,7 @@ function App() {
                     <button
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
-                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags[cat] || []).includes(tag.value)
+                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
                         ? 'bg-indigo-600 text-white shadow-lg scale-105'
                         : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
@@ -438,7 +443,7 @@ function App() {
                     <button
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
-                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags[cat] || []).includes(tag.value)
+                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
                         ? 'bg-cyan-600 text-white shadow-lg scale-105'
                         : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
@@ -469,7 +474,7 @@ function App() {
                     <button
                       key={tag.value}
                       onClick={() => handleTagSelect(cat, tag.value)}
-                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags[cat] || []).includes(tag.value)
+                      className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected(cat, tag.value)
                         ? 'bg-teal-600 text-white shadow-lg scale-105'
                         : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                         }`}
@@ -494,7 +499,7 @@ function App() {
                   <button
                     key={tag.value}
                     onClick={() => handleTagSelect('artist', tag.value)}
-                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags.artist || []).includes(tag.value)
+                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected('artist', tag.value)
                       ? 'bg-orange-600 text-white shadow-lg scale-105'
                       : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                       }`}
@@ -512,7 +517,7 @@ function App() {
                   <button
                     key={tag.value}
                     onClick={() => handleTagSelect('artMedium', tag.value)}
-                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags.artMedium || []).includes(tag.value)
+                    className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected('artMedium', tag.value)
                       ? 'bg-amber-600 text-white shadow-lg scale-105'
                       : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                       }`}
@@ -533,7 +538,7 @@ function App() {
               <button
                 key={tag.value}
                 onClick={() => handleTagSelect('quality', tag.value)}
-                className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${(selectedTags.quality || []).includes(tag.value)
+                className={`px-3 py-2 rounded-lg font-medium transition-all text-sm ${isTagSelected('quality', tag.value)
                   ? 'bg-yellow-500 text-black shadow-lg scale-105'
                   : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                   }`}

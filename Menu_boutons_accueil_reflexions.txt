@@ -1,0 +1,277 @@
+avant de modifier quoique ce soit je te donne aussi mes remarques d'un point de vue purement fonctionnel sections par sections avec mes commentaires derrière un chevron "> exemple" :
+🎲 42 !✨ Générer le Prompt🗑️ Tout Effacer > les 3 premiers gros boutons fonctionnent.
+ 
+Sujet Principal
+    Âge > fonctionne bien
+        👤 Young Adult (18-25)
+        👨 Adult (26-40)
+        🧔 Middle-aged (41-55)
+        👴 Mature (56-70)
+        👵 Elder (70+)
+    Genre > cliquer sur un autre bouton renvoi une erreur ligne 122 de tagConflicts.js
+        ♀️ Femme
+        ♂️ Homme
+        ⚧️ Autre
+    Espèce > cliquer sur un autre bouton renvoi une erreur ligne 122 de tagConflicts.js mais pas pour tout, j'ai vu que surtout Human, Demon, Cyborg, Angel bugé (pourquoi ceux là aucune idée)
+        👤 Human
+        🧝 Elf
+        🧝‍♀️ Dark Elf
+        🧔 Dwarf
+        👹 Orc
+        😈 Tiefling
+        🐉 Dragonborn
+        🧛 Vampire
+        🐺 Werewolf
+        🧚 Fairy
+        👿 Demon
+        👼 Angel
+        🤖 Cyborg
+        🦾 Android
+        👽 Alien
+Apparence
+    Morphologie > cliquer sur un autre bouton renvoi une erreur ligne 122 de tagConflicts.js
+        🌿 Slender
+        💪 Athletic
+        🏋️ Muscular
+        🌊 Curvy
+        🌸 Petite
+        📏 Tall
+        👤 Average
+        💃 Voluptuous
+    Poitrine > fonctionne bien
+        Small
+        Medium
+        Large
+        Huge
+    Fessiers > fonctionne bien
+        Small
+        Medium
+        Large
+        Huge
+    Cheveux > fonctionne mais j'aimerais séparé la couleur et la forme, tu en pense quoi ?
+        💇 Long Hair
+        ✂️ Short Hair
+        🧑 Medium Hair
+        💇‍♀️ Very Long Hair
+        ⚫ Bald
+        Straight Hair
+        🌊 Wavy Hair
+        🌀 Curly Hair
+        🪢 Braided Hair
+        🎀 Ponytail
+        🥐 Bun
+        💨 Messy Hair
+        ⚡ Spiky Hair
+        👱 Blonde
+        🟤 Brown
+        ⚫ Black
+        🔴 Red
+        ⚪ White
+        ⚪ Silver
+        🔵 Blue
+        🩷 Pink
+        🟣 Purple
+        🟢 Green
+    Yeux > on peut tout selectionner, je veux avoir seulement un seul choix
+        🔵 Blue Eyes
+        🟢 Green Eyes
+        🟤 Brown Eyes
+        🟡 Hazel Eyes
+        ⚪ Gray Eyes
+        🟠 Amber Eyes
+        🔴 Red Eyes
+        🟣 Purple Eyes
+        🟡 Golden Eyes
+        ✨ Glowing Eyes
+        👁️ Heterochromia
+    Expression > fonctionne bien
+        😊 Smiling
+        😐 Serious
+        😠 Angry
+        😢 Sad
+        😏 Playful
+        😶 Mysterious
+        😘 Seductive
+        😤 Determined
+        😲 Surprised
+        😑 Neutral
+Vêtements > tte les catégories fonctionne bien
+    Haut
+        👕 T-Shirt
+        🧥 Hoodie
+        🧶 Sweater
+        👚 Tank Top
+        🤵 Suit Jacket
+        👔 Blazer
+        👔 Dress Shirt
+        🛡️ Leather Armor
+        ⛓️ Chainmail
+        🛡️ Plate Armor
+        🧙 Wizard Robe
+        🧥 Cloak
+        🦸 Cape
+        🎖️ Tactical Vest
+        🛡️ Body Armor
+        👗 Dress
+        👗 Ball Gown
+        👙 Corset
+    Bas
+        👖 Jeans
+        👖 Pants
+        🩳 Shorts
+        🧘 Leggings
+        👗 Skirt
+        👗 Mini Skirt
+        👗 Long Skirt
+        🛡️ Armored Leggings
+        🎖️ Tactical Pants
+    Chaussures
+        🥾 Boots
+        👢 Combat Boots
+        👢 Knee-high Boots
+        👟 Sneakers
+        👠 High Heels
+        👡 Sandals
+        🛡️ Armored Boots
+        🦶 Barefoot
+    Accessoires
+        📿 Necklace
+        💍 Earrings
+        ⌚ Bracelet
+        👑 Crown
+        👸 Tiara
+        🧣 Scarf
+        🎩 Hat
+        🧤 Gloves
+        ⚙️ Belt
+        ⚔️ Sword
+        🏹 Bow
+        🪄 Staff
+        🛡️ Shield
+        🗡️ Dagger
+        🎒 Backpack
+        🕶️ Sunglasses
+        👓 Glasses
+Composition > tte les catégories fonctionne bien
+    Pose
+        🧍 Standing
+        🪑 Sitting
+        🧎 Kneeling
+        🛏️ Lying Down
+        🏃 Running
+        🤸 Jumping
+        🦅 Flying
+        💃 Dancing
+        🥊 Fighting Stance
+        ⚔️ Wielding Weapon
+        🪄 Casting Spell
+        🙅 Arms Crossed
+        🙋 Hands on Hips
+        🦸 Heroic Stance
+        🎭 Dramatic Pose
+        👀 Looking Back
+    Point de vue
+        🖼️ Portrait
+        🧍 Full Body
+        📸 Close-up
+        🎬 Medium Shot
+        🎥 Wide Shot
+        🦅 From Above
+        👇 From Below
+        ↔️ Side View
+        🔙 Back View
+        📐 Three-quarter View
+Environnement > tte les catégories fonctionne bien sauf météo qui bug
+    Lieu
+        🌲 Forest
+        ⛰️ Mountains
+        🏖️ Beach
+        🏜️ Desert
+        🕳️ Cave
+        💦 Waterfall
+        🏙️ City
+        🌃 Cyberpunk City
+        🏰 Medieval Town
+        🏢 Rooftop
+        🏰 Castle
+        👑 Throne Room
+        📚 Library
+        🍺 Tavern
+        🛏️ Bedroom
+        ⛓️ Dungeon
+        ✨ Magical Realm
+        ☁️ Floating Island
+        🗼 Wizard Tower
+        🚀 Spaceship
+        🛸 Space Station
+        👽 Alien World
+    Moment
+        🌅 Dawn
+        🌄 Morning
+        ☀️ Noon
+        🌤️ Afternoon
+        🌇 Sunset
+        🌆 Dusk
+        🌙 Night
+        🌌 Midnight
+        🌟 Golden Hour
+    Éclairage
+        ☀️ Natural Lighting
+        🎭 Dramatic Lighting
+        💡 Soft Lighting
+        ✨ Rim Lighting
+        🔦 Backlighting
+        🌈 Neon Lights
+        🕯️ Candle Light
+        🌙 Moonlight
+        🌫️ Volumetric Lighting
+        ☀️ God Rays
+    Météo > erreur avec par exemple clear sky + fog pareil fichier conflit ligne 122
+        ☀️ Clear Sky
+        ☁️ Cloudy
+        🌧️ Rain
+        ⛈️ Storm
+        ❄️ Snow
+        🌫️ Fog
+        🌁 Mist
+        💨 W
+Style artistique
+    Artiste je veux enlever cette ligne, le but n'est pas de volé le boulot des artistes reconnue. Je suis contre.
+        🎨 Greg Rutkowski
+        🎨 Artgerm
+        🎨 Alphonse Mucha
+        🎨 WLOP
+        🎨 Sakimichan
+        🎨 Loish
+        🎨 Ross Tran
+        🎨 Makoto Shinkai
+        🎨 Studio Ghibli
+    Médium > fonctionne bien on enlevera donc la sous catégorie médium et on mettra ces boutons directement dans style artistique.
+        💻 Digital Art
+        🖌️ Digital Painting
+        🎮 3D Render
+        🎨 Concept Art
+        🖼️ Oil Painting
+        💧 Watercolor
+        ✏️ Pencil Drawing
+        🎌 Anime Style
+        📖 Manga Style
+        📚 Comic Book Style
+        📷 Photorealistic
+        🔍 Hyperrealistic
+        🎬 Cel Shaded
+Qualité & Technique > fonctionne bien
+    8K Resolution
+    4K Resolution
+    ✨ Ultra Detailed
+    🔍 Highly Detailed
+    🎯 Sharp Focus
+    🏆 Masterpiece
+    🏅 Award Winning
+    💼 Professional
+    📈 Trending on ArtStation
+    🎬 Cinematic
+    🎭 Dramatic
+    ⚡ Epic
+    🌟 Stunning
+    ✨ Beautiful
