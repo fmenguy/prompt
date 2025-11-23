@@ -134,16 +134,21 @@ function generateSmartFallback(tags, subject) {
     if (desc) parts.push(desc);
   }
 
-  // 3. Espèce (gestion elf, fox, etc.)
+  // 3. Espèce (gestion spécifique)
   const species = (safeFirst(tags.species) || subject.species || 'human').toLowerCase();
+
   if (species.includes('elf')) {
     parts.push('beautiful elf', 'delicate pointed elf ears', 'ethereal glow');
-  } else if (species.includes('fox')) {
-    parts.push('cute fox girl', 'fluffy fox ears', 'bushy fox tail');
-  } else if (species.includes('cat')) {
-    parts.push('cute cat girl', 'cute cat ears', 'slender cat tail');
-  } else if (species.includes('wolf')) {
-    parts.push('wolf girl', 'wolf ears', 'fluffy wolf tail');
+  } else if (species.includes('dwarf')) {
+    parts.push('sturdy dwarf', 'thick beard', 'muscular build');
+  } else if (species.includes('orc')) {
+    parts.push('powerful orc', 'green skin', 'prominent tusks', 'muscular physique');
+  } else if (species.includes('vampire')) {
+    parts.push('elegant vampire', 'pale skin', 'sharp fangs', 'crimson eyes', 'supernatural beauty');
+  } else if (species.includes('fairy')) {
+    parts.push('delicate fairy', 'translucent wings', 'petite frame', 'magical sparkles');
+  } else if (species.includes('cyborg')) {
+    parts.push('cybernetic enhancements', 'mechanical parts', 'glowing circuits', 'futuristic design');
   } else if (species !== 'human') {
     parts.push(species);
   }

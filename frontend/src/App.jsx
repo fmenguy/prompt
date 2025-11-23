@@ -380,15 +380,17 @@ function App() {
               </div>
             </div>
 
-            {/* ESPÈCE - 3 COLONNES */}
+            {/* ESPÈCE */}
             <div>
               <h3 className="text-xl font-semibold text-purple-300 mb-3">Espèce</h3>
-              <div className="grid grid-cols-6 gap-6">
+              <div className="flex flex-wrap gap-3">
                 {prompts.subject.species.map((spec) => (
                   <button
                     key={spec.value}
                     onClick={() => handleTagSelect('species', spec.value)}
-                    className={`tag-button ${selectedTags.species === spec.value ? 'active' : ''
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedTags.species === spec.value
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
                   >
                     {spec.label}
@@ -396,6 +398,8 @@ function App() {
                 ))}
               </div>
             </div>
+
+
 
 
           </div>
@@ -534,7 +538,7 @@ function App() {
         {/* 🎨 STYLE */}
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl mb-8">
           <h2 className="text-2xl font-bold text-white mb-8">Style artistique</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-wrap gap-3">
             <div>
               <div className="flex flex-wrap gap-2">
                 {(prompts.style?.artist || []).map((tag) => (

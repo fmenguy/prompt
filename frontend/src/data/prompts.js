@@ -17,19 +17,11 @@ export const promptData = {
     species: [
       { value: 'human', label: '👤 Human' },
       { value: 'elf', label: '🧝 Elf' },
-      { value: 'dark_elf', label: '🧝‍♀️ Dark Elf' },
       { value: 'dwarf', label: '🧔 Dwarf' },
       { value: 'orc', label: '👹 Orc' },
-      { value: 'tiefling', label: '😈 Tiefling' },
-      { value: 'dragonborn', label: '🐉 Dragonborn' },
       { value: 'vampire', label: '🧛 Vampire' },
-      { value: 'werewolf', label: '🐺 Werewolf' },
       { value: 'fairy', label: '🧚 Fairy' },
-      { value: 'demon', label: '👿 Demon' },
-      { value: 'angel', label: '👼 Angel' },
       { value: 'cyborg', label: '🤖 Cyborg' },
-      { value: 'android', label: '🦾 Android' },
-      { value: 'alien', label: '👽 Alien' }
     ]
   },
 

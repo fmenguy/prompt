@@ -9,23 +9,27 @@ export const tagConflicts = {
   // APPARENCE PHYSIQUE
   // ══════════════════════════════════════════
 species: {
-  'human': ['elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'cyborg', 'android', 'alien'],
-  'elf': ['human', 'dark_elf', 'dwarf', 'orc', 'dragonborn', 'demon', 'cyborg', 'android', 'alien'],
-  'dark_elf': ['human', 'elf', 'dwarf', 'orc', 'angel', 'cyborg', 'android'],
-  'dwarf': ['human', 'elf', 'dark_elf', 'fairy', 'cyborg', 'android', 'alien'],
-  'orc': ['human', 'elf', 'fairy', 'angel', 'cyborg', 'android'],
-  'tiefling': ['human', 'angel', 'cyborg', 'android'],
-  'dragonborn': ['human', 'elf', 'cyborg', 'android', 'alien'],
-  'vampire': ['human', 'werewolf', 'angel', 'cyborg', 'android'],
-  'werewolf': ['human', 'vampire', 'cyborg', 'android', 'alien'],
-  'fairy': ['human', 'dwarf', 'orc', 'cyborg', 'android', 'alien'],
-  'demon': ['human', 'elf', 'dark_elf', 'angel', 'cyborg', 'android'],
-  'angel': ['dark_elf', 'orc', 'tiefling', 'vampire', 'demon', 'cyborg', 'android'],
-  'cyborg': ['human', 'elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'android', 'alien'],
-  'android': ['human', 'elf', 'dark_elf', 'dwarf', 'orc', 'tiefling', 'dragonborn', 'vampire', 'werewolf', 'fairy', 'demon', 'angel', 'cyborg', 'alien'],
-  'alien': ['human', 'dwarf', 'dragonborn', 'werewolf', 'fairy', 'cyborg', 'android']
+  'human': ['elf', 'dwarf', 'orc', 'vampire', 'fairy', 'cyborg'],
+  'elf': ['human', 'dwarf', 'orc', 'cyborg'],
+  'dwarf': ['human', 'elf', 'orc', 'vampire', 'fairy', 'cyborg'],
+  'orc': ['human', 'elf', 'dwarf', 'vampire', 'fairy', 'cyborg'],
+  'vampire': ['human', 'dwarf', 'orc', 'fairy', 'cyborg'],
+  'fairy': ['human', 'dwarf', 'orc', 'vampire', 'cyborg'],
+  'cyborg': ['human', 'elf', 'dwarf', 'orc', 'vampire', 'fairy'],
 },
 
+//ou en tout compatible : 
+/*
+species: {
+  'human': [],
+  'elf': [],
+  'dwarf': [],
+  'orc': [],
+  'vampire': [],
+  'fairy': [],
+  'cyborg': [],
+},
+*/
 
   bodyType: {
     'petite': ['muscular', 'curvy', 'athletic', 'voluptuous'],
