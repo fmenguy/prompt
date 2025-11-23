@@ -1,4 +1,5 @@
 avant de modifier quoique ce soit je te donne aussi mes remarques d'un point de vue purement fonctionnel sections par sections avec mes commentaires derrière un chevron "> exemple" :
+
 🎲 42 !✨ Générer le Prompt🗑️ Tout Effacer > les 3 premiers gros boutons fonctionnent.
  
 Sujet Principal
