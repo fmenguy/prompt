@@ -40,3 +40,4 @@ frontend/.vite/
 
 .vercel
 tree*
+package-lock.json
