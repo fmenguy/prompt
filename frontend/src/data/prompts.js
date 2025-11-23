@@ -2,428 +2,423 @@
 
 export const promptData = {
   // ============================================
-  // 🎯 AGE (Pour le curseur)
-  // ============================================
-  age: {
-    min: 18,
-    max: 60,
-    default: 25
-  },
-
-  // ============================================
-  // 👤 GENRE (Boutons radio)
-  // ============================================
-  gender: [
-    { value: 'female', label: 'Femme', icon: '♀' },
-    { value: 'male', label: 'Homme', icon: '♂' },
-    { value: 'androgynous', label: 'Androgynous', icon: '⚧' }
-  ],
-
-  // ============================================
-  // 🎭 SUJET
+  // 🎯 SUJET PRINCIPAL
   // ============================================
   subject: {
+    // Type de personnage
     character: [
-      'woman', 'man', 'person', 'girl', 'boy',
-      'warrior', 'mage', 'knight', 'archer', 'assassin',
-      'princess', 'prince', 'queen', 'king',
-      'witch', 'wizard', 'sorcerer', 'druid',
-      'angel', 'demon', 'vampire', 'werewolf',
-      'elf', 'dwarf', 'orc', 'goblin',
-      'cyborg', 'android', 'robot', 'alien',
-      'pirate', 'ninja', 'samurai', 'monk',
-      'detective', 'scientist', 'doctor', 'soldier'
+      { value: 'woman', label: '👩 Woman' },
+      { value: 'man', label: '👨 Man' },
+      { value: 'person', label: '👤 Person' },
+      { value: 'girl', label: '👧 Girl' },
+      { value: 'boy', label: '👦 Boy' },
+      { value: 'warrior', label: '⚔️ Warrior' },
+      { value: 'mage', label: '🧙 Mage' },
+      { value: 'knight', label: '🛡️ Knight' },
+      { value: 'archer', label: '🏹 Archer' },
+      { value: 'assassin', label: '🗡️ Assassin' },
+      { value: 'princess', label: '👸 Princess' },
+      { value: 'prince', label: '🤴 Prince' },
+      { value: 'queen', label: '👑 Queen' },
+      { value: 'king', label: '👑 King' },
+      { value: 'witch', label: '🧙‍♀️ Witch' },
+      { value: 'wizard', label: '🧙‍♂️ Wizard' },
+      { value: 'angel', label: '👼 Angel' },
+      { value: 'demon', label: '😈 Demon' },
+      { value: 'vampire', label: '🧛 Vampire' },
+      { value: 'elf', label: '🧝 Elf' },
+      { value: 'cyborg', label: '🤖 Cyborg' },
+      { value: 'alien', label: '👽 Alien' },
+      { value: 'pirate', label: '🏴‍☠️ Pirate' },
+      { value: 'ninja', label: '🥷 Ninja' },
+      { value: 'samurai', label: '🗾 Samurai' }
+    ],
+
+    // ÂGE - Système par catégories
+    age: [
+      { value: 'young_adult', label: '👤 Young Adult (18-25)' },
+      { value: 'adult', label: '👨 Adult (26-40)' },
+      { value: 'middle_aged', label: '🧔 Middle-aged (41-55)' },
+      { value: 'mature', label: '👴 Mature (56-70)' },
+      { value: 'elder', label: '👵 Elder (70+)' }
+    ],
+
+    // GENRE
+    gender: [
+      { value: 'female', label: '♀️ Female' },
+      { value: 'male', label: '♂️ Male' },
+      { value: 'androgynous', label: '⚧️ Androgynous' }
+    ],
+
+    // ESPÈCE
+    species: [
+      { value: 'human', label: '👤 Human' },
+      { value: 'elf', label: '🧝 Elf' },
+      { value: 'dark_elf', label: '🧝‍♀️ Dark Elf' },
+      { value: 'dwarf', label: '🧔 Dwarf' },
+      { value: 'orc', label: '👹 Orc' },
+      { value: 'tiefling', label: '😈 Tiefling' },
+      { value: 'dragonborn', label: '🐉 Dragonborn' },
+      { value: 'vampire', label: '🧛 Vampire' },
+      { value: 'werewolf', label: '🐺 Werewolf' },
+      { value: 'fairy', label: '🧚 Fairy' },
+      { value: 'demon', label: '👿 Demon' },
+      { value: 'angel', label: '👼 Angel' },
+      { value: 'cyborg', label: '🤖 Cyborg' },
+      { value: 'android', label: '🦾 Android' },
+      { value: 'alien', label: '👽 Alien' }
     ]
   },
 
   // ============================================
-  // 🐾 ESPÈCES
+  // 💪 APPARENCE PHYSIQUE
   // ============================================
-  species: [
-    'human', 'elf', 'dark elf', 'high elf', 'wood elf',
-    'dwarf', 'halfling', 'gnome', 'orc', 'half-orc',
-    'tiefling', 'dragonborn', 'aasimar', 'genasi',
-    'centaur', 'satyr', 'minotaur', 'lizardfolk',
-    'tabaxi', 'kenku', 'aarakocra', 'triton',
-    'fairy', 'pixie', 'sprite', 'nymph',
-    'vampire', 'werewolf', 'shapeshifter', 'demon',
-    'angel', 'celestial', 'infernal', 'fey',
-    'android', 'cyborg', 'robot', 'AI construct',
-    'alien', 'extraterrestrial', 'interdimensional being'
-  ],
+  appearance: {
+    bodyType: [
+      { value: 'slender', label: '🌿 Slender' },
+      { value: 'athletic', label: '💪 Athletic' },
+      { value: 'muscular', label: '🏋️ Muscular' },
+      { value: 'curvy', label: '🌊 Curvy' },
+      { value: 'petite', label: '🌸 Petite' },
+      { value: 'tall', label: '📏 Tall' },
+      { value: 'average', label: '👤 Average' },
+      { value: 'voluptuous', label: '💃 Voluptuous' }
+    ],
+
+    breastSize: [
+      { value: 'small', label: 'Small' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'large', label: 'Large' },
+      { value: 'huge', label: 'Huge' }
+    ],
+
+    buttSize: [
+      { value: 'small', label: 'Small' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'large', label: 'Large' },
+      { value: 'huge', label: 'Huge' }
+    ],
+
+    hair: [
+      // Longueurs
+      { value: 'long_hair', label: '💇 Long Hair' },
+      { value: 'short_hair', label: '✂️ Short Hair' },
+      { value: 'medium_hair', label: '🧑 Medium Hair' },
+      { value: 'very_long_hair', label: '💇‍♀️ Very Long Hair' },
+      { value: 'bald', label: '⚫ Bald' },
+      
+      // Styles
+      { value: 'straight_hair', label: 'Straight Hair' },
+      { value: 'wavy_hair', label: '🌊 Wavy Hair' },
+      { value: 'curly_hair', label: '🌀 Curly Hair' },
+      { value: 'braided_hair', label: '🪢 Braided Hair' },
+      { value: 'ponytail', label: '🎀 Ponytail' },
+      { value: 'bun', label: '🥐 Bun' },
+      { value: 'messy_hair', label: '💨 Messy Hair' },
+      { value: 'spiky_hair', label: '⚡ Spiky Hair' },
+      
+      // Couleurs
+      { value: 'blonde_hair', label: '👱 Blonde' },
+      { value: 'brown_hair', label: '🟤 Brown' },
+      { value: 'black_hair', label: '⚫ Black' },
+      { value: 'red_hair', label: '🔴 Red' },
+      { value: 'white_hair', label: '⚪ White' },
+      { value: 'silver_hair', label: '⚪ Silver' },
+      { value: 'blue_hair', label: '🔵 Blue' },
+      { value: 'pink_hair', label: '🩷 Pink' },
+      { value: 'purple_hair', label: '🟣 Purple' },
+      { value: 'green_hair', label: '🟢 Green' }
+    ],
+
+    eyes: [
+      { value: 'blue_eyes', label: '🔵 Blue Eyes' },
+      { value: 'green_eyes', label: '🟢 Green Eyes' },
+      { value: 'brown_eyes', label: '🟤 Brown Eyes' },
+      { value: 'hazel_eyes', label: '🟡 Hazel Eyes' },
+      { value: 'gray_eyes', label: '⚪ Gray Eyes' },
+      { value: 'amber_eyes', label: '🟠 Amber Eyes' },
+      { value: 'red_eyes', label: '🔴 Red Eyes' },
+      { value: 'purple_eyes', label: '🟣 Purple Eyes' },
+      { value: 'golden_eyes', label: '🟡 Golden Eyes' },
+      { value: 'glowing_eyes', label: '✨ Glowing Eyes' },
+      { value: 'heterochromia', label: '👁️ Heterochromia' }
+    ],
+
+    facialExpression: [
+      { value: 'smiling', label: '😊 Smiling' },
+      { value: 'serious', label: '😐 Serious' },
+      { value: 'angry', label: '😠 Angry' },
+      { value: 'sad', label: '😢 Sad' },
+      { value: 'playful', label: '😏 Playful' },
+      { value: 'mysterious', label: '😶 Mysterious' },
+      { value: 'seductive', label: '😘 Seductive' },
+      { value: 'determined', label: '😤 Determined' },
+      { value: 'surprised', label: '😲 Surprised' },
+      { value: 'neutral', label: '😑 Neutral' }
+    ]
+  },
 
   // ============================================
-  // 💪 MORPHOLOGIE
+  // 👔 VÊTEMENTS
   // ============================================
-  bodyType: [
-    'slender', 'athletic', 'muscular', 'curvy',
-    'petite', 'tall', 'short', 'average',
-    'toned', 'fit', 'strong', 'lithe',
-    'voluptuous', 'stocky', 'lean', 'robust',
-    'graceful', 'powerful', 'elegant', 'imposing'
-  ],
+  clothing: {
+    topwear: [
+      // Casual
+      { value: 't-shirt', label: '👕 T-Shirt' },
+      { value: 'hoodie', label: '🧥 Hoodie' },
+      { value: 'sweater', label: '🧶 Sweater' },
+      { value: 'tank_top', label: '👚 Tank Top' },
+      
+      // Formel
+      { value: 'suit_jacket', label: '🤵 Suit Jacket' },
+      { value: 'blazer', label: '👔 Blazer' },
+      { value: 'dress_shirt', label: '👔 Dress Shirt' },
+      
+      // Fantasy
+      { value: 'leather_armor', label: '🛡️ Leather Armor' },
+      { value: 'chainmail', label: '⛓️ Chainmail' },
+      { value: 'plate_armor', label: '🛡️ Plate Armor' },
+      { value: 'wizard_robe', label: '🧙 Wizard Robe' },
+      { value: 'cloak', label: '🧥 Cloak' },
+      { value: 'cape', label: '🦸 Cape' },
+      
+      // Moderne/Sci-fi
+      { value: 'tactical_vest', label: '🎖️ Tactical Vest' },
+      { value: 'body_armor', label: '🛡️ Body Armor' },
+      
+      // Élégant
+      { value: 'dress', label: '👗 Dress' },
+      { value: 'ball_gown', label: '👗 Ball Gown' },
+      { value: 'corset', label: '👙 Corset' }
+    ],
+
+    bottomwear: [
+      { value: 'jeans', label: '👖 Jeans' },
+      { value: 'pants', label: '👖 Pants' },
+      { value: 'shorts', label: '🩳 Shorts' },
+      { value: 'leggings', label: '🧘 Leggings' },
+      { value: 'skirt', label: '👗 Skirt' },
+      { value: 'mini_skirt', label: '👗 Mini Skirt' },
+      { value: 'long_skirt', label: '👗 Long Skirt' },
+      { value: 'armored_leggings', label: '🛡️ Armored Leggings' },
+      { value: 'tactical_pants', label: '🎖️ Tactical Pants' }
+    ],
+
+    footwear: [
+      { value: 'boots', label: '🥾 Boots' },
+      { value: 'combat_boots', label: '👢 Combat Boots' },
+      { value: 'knee_high_boots', label: '👢 Knee-high Boots' },
+      { value: 'sneakers', label: '👟 Sneakers' },
+      { value: 'high_heels', label: '👠 High Heels' },
+      { value: 'sandals', label: '👡 Sandals' },
+      { value: 'armored_boots', label: '🛡️ Armored Boots' },
+      { value: 'barefoot', label: '🦶 Barefoot' }
+    ],
+
+    accessories: [
+      // Bijoux
+      { value: 'necklace', label: '📿 Necklace' },
+      { value: 'earrings', label: '💍 Earrings' },
+      { value: 'bracelet', label: '⌚ Bracelet' },
+      { value: 'crown', label: '👑 Crown' },
+      { value: 'tiara', label: '👸 Tiara' },
+      
+      // Accessoires vêtements
+      { value: 'scarf', label: '🧣 Scarf' },
+      { value: 'hat', label: '🎩 Hat' },
+      { value: 'gloves', label: '🧤 Gloves' },
+      { value: 'belt', label: '⚙️ Belt' },
+      
+      // Armes
+      { value: 'sword', label: '⚔️ Sword' },
+      { value: 'bow', label: '🏹 Bow' },
+      { value: 'staff', label: '🪄 Staff' },
+      { value: 'shield', label: '🛡️ Shield' },
+      { value: 'dagger', label: '🗡️ Dagger' },
+      
+      // Moderne
+      { value: 'backpack', label: '🎒 Backpack' },
+      { value: 'sunglasses', label: '🕶️ Sunglasses' },
+      { value: 'glasses', label: '👓 Glasses' }
+    ]
+  },
 
   // ============================================
-  // 💇 CHEVEUX
+  // 🎭 COMPOSITION
   // ============================================
-  hair: [
-    // Longueurs
-    'long hair', 'short hair', 'medium hair', 'very long hair',
-    'shoulder-length hair', 'waist-length hair', 'buzz cut', 'bald',
-    
-    // Styles
-    'straight hair', 'wavy hair', 'curly hair', 'braided hair',
-    'ponytail', 'bun', 'messy hair', 'wild hair',
-    'bob cut', 'pixie cut', 'undercut', 'mohawk',
-    'dreadlocks', 'cornrows', 'afro', 'spiky hair',
-    'flowing hair', 'windswept hair', 'tied hair', 'loose hair',
-    
-    // Couleurs
-    'blonde hair', 'brown hair', 'black hair', 'red hair',
-    'white hair', 'silver hair', 'gray hair', 'auburn hair',
-    'platinum blonde', 'jet black', 'chestnut brown',
-    'blue hair', 'pink hair', 'purple hair', 'green hair',
-    'rainbow hair', 'two-tone hair', 'ombre hair', 'highlighted hair'
-  ],
+  composition: {
+    pose: [
+      // Statiques
+      { value: 'standing', label: '🧍 Standing' },
+      { value: 'sitting', label: '🪑 Sitting' },
+      { value: 'kneeling', label: '🧎 Kneeling' },
+      { value: 'lying_down', label: '🛏️ Lying Down' },
+      
+      // Dynamiques
+      { value: 'running', label: '🏃 Running' },
+      { value: 'jumping', label: '🤸 Jumping' },
+      { value: 'flying', label: '🦅 Flying' },
+      { value: 'dancing', label: '💃 Dancing' },
+      
+      // Combat
+      { value: 'fighting_stance', label: '🥊 Fighting Stance' },
+      { value: 'wielding_weapon', label: '⚔️ Wielding Weapon' },
+      { value: 'casting_spell', label: '🪄 Casting Spell' },
+      
+      // Expressives
+      { value: 'arms_crossed', label: '🙅 Arms Crossed' },
+      { value: 'hands_on_hips', label: '🙋 Hands on Hips' },
+      { value: 'heroic_stance', label: '🦸 Heroic Stance' },
+      { value: 'dramatic_pose', label: '🎭 Dramatic Pose' },
+      { value: 'looking_back', label: '👀 Looking Back' }
+    ],
+
+    viewpoint: [
+      { value: 'portrait', label: '🖼️ Portrait' },
+      { value: 'full_body', label: '🧍 Full Body' },
+      { value: 'close_up', label: '📸 Close-up' },
+      { value: 'medium_shot', label: '🎬 Medium Shot' },
+      { value: 'wide_shot', label: '🎥 Wide Shot' },
+      { value: 'from_above', label: '🦅 From Above' },
+      { value: 'from_below', label: '👇 From Below' },
+      { value: 'side_view', label: '↔️ Side View' },
+      { value: 'back_view', label: '🔙 Back View' },
+      { value: 'three_quarter_view', label: '📐 Three-quarter View' }
+    ]
+  },
 
   // ============================================
-  // 👁️ YEUX
+  // 🌍 ENVIRONNEMENT
   // ============================================
-  eyes: [
-    'blue eyes', 'green eyes', 'brown eyes', 'hazel eyes',
-    'gray eyes', 'amber eyes', 'black eyes', 'dark eyes',
-    'light eyes', 'bright eyes', 'piercing eyes', 'deep eyes',
-    'heterochromia', 'cat eyes', 'reptilian eyes', 'glowing eyes',
-    'red eyes', 'purple eyes', 'golden eyes', 'silver eyes',
-    'luminous eyes', 'mysterious eyes', 'intense gaze', 'gentle eyes'
-  ],
+  environment: {
+    location: [
+      // Nature
+      { value: 'forest', label: '🌲 Forest' },
+      { value: 'mountains', label: '⛰️ Mountains' },
+      { value: 'beach', label: '🏖️ Beach' },
+      { value: 'desert', label: '🏜️ Desert' },
+      { value: 'cave', label: '🕳️ Cave' },
+      { value: 'waterfall', label: '💦 Waterfall' },
+      
+      // Urbain
+      { value: 'city', label: '🏙️ City' },
+      { value: 'cyberpunk_city', label: '🌃 Cyberpunk City' },
+      { value: 'medieval_town', label: '🏰 Medieval Town' },
+      { value: 'rooftop', label: '🏢 Rooftop' },
+      
+      // Intérieur
+      { value: 'castle', label: '🏰 Castle' },
+      { value: 'throne_room', label: '👑 Throne Room' },
+      { value: 'library', label: '📚 Library' },
+      { value: 'tavern', label: '🍺 Tavern' },
+      { value: 'bedroom', label: '🛏️ Bedroom' },
+      { value: 'dungeon', label: '⛓️ Dungeon' },
+      
+      // Fantasy
+      { value: 'magical_realm', label: '✨ Magical Realm' },
+      { value: 'floating_island', label: '☁️ Floating Island' },
+      { value: 'wizard_tower', label: '🗼 Wizard Tower' },
+      
+      // Sci-fi
+      { value: 'spaceship', label: '🚀 Spaceship' },
+      { value: 'space_station', label: '🛸 Space Station' },
+      { value: 'alien_world', label: '👽 Alien World' }
+    ],
+
+    timeOfDay: [
+      { value: 'dawn', label: '🌅 Dawn' },
+      { value: 'morning', label: '🌄 Morning' },
+      { value: 'noon', label: '☀️ Noon' },
+      { value: 'afternoon', label: '🌤️ Afternoon' },
+      { value: 'sunset', label: '🌇 Sunset' },
+      { value: 'dusk', label: '🌆 Dusk' },
+      { value: 'night', label: '🌙 Night' },
+      { value: 'midnight', label: '🌌 Midnight' },
+      { value: 'golden_hour', label: '🌟 Golden Hour' }
+    ],
+
+    lighting: [
+      { value: 'natural_lighting', label: '☀️ Natural Lighting' },
+      { value: 'dramatic_lighting', label: '🎭 Dramatic Lighting' },
+      { value: 'soft_lighting', label: '💡 Soft Lighting' },
+      { value: 'rim_lighting', label: '✨ Rim Lighting' },
+      { value: 'backlighting', label: '🔦 Backlighting' },
+      { value: 'neon_lights', label: '🌈 Neon Lights' },
+      { value: 'candle_light', label: '🕯️ Candle Light' },
+      { value: 'moonlight', label: '🌙 Moonlight' },
+      { value: 'volumetric_lighting', label: '🌫️ Volumetric Lighting' },
+      { value: 'god_rays', label: '☀️ God Rays' }
+    ],
+
+    weather: [
+      { value: 'clear_sky', label: '☀️ Clear Sky' },
+      { value: 'cloudy', label: '☁️ Cloudy' },
+      { value: 'rain', label: '🌧️ Rain' },
+      { value: 'storm', label: '⛈️ Storm' },
+      { value: 'snow', label: '❄️ Snow' },
+      { value: 'fog', label: '🌫️ Fog' },
+      { value: 'mist', label: '🌁 Mist' },
+      { value: 'windy', label: '💨 Windy' }
+    ]
+  },
 
   // ============================================
-  // 👔 VÊTEMENTS - HAUT
+  // 🎨 STYLE ARTISTIQUE
   // ============================================
-  topwear: [
-    // Casual
-    't-shirt', 'tank top', 'crop top', 'hoodie',
-    'sweater', 'cardigan', 'blouse', 'shirt',
-    'polo shirt', 'flannel shirt', 'tunic',
-    
-    // Formel
-    'suit jacket', 'blazer', 'dress shirt', 'vest',
-    'tuxedo', 'waistcoat', 'tailcoat',
-    
-    // Fantasy/Médiéval
-    'leather armor', 'chainmail', 'plate armor', 'breastplate',
-    'tunic', 'jerkin', 'doublet', 'robe',
-    'wizard robe', 'cloak', 'cape', 'mantle',
-    
-    // Moderne/Sci-fi
-    'tactical vest', 'body armor', 'exosuit', 'tech suit',
-    'combat armor', 'space suit', 'power armor',
-    
-    // Style
-    'elegant dress', 'ball gown', 'kimono', 'sari',
-    'corset', 'bustier', 'halter top', 'off-shoulder top'
-  ],
+  style: {
+    artist: [
+      { value: 'greg_rutkowski', label: '🎨 Greg Rutkowski' },
+      { value: 'artgerm', label: '🎨 Artgerm' },
+      { value: 'alphonse_mucha', label: '🎨 Alphonse Mucha' },
+      { value: 'wlop', label: '🎨 WLOP' },
+      { value: 'sakimichan', label: '🎨 Sakimichan' },
+      { value: 'loish', label: '🎨 Loish' },
+      { value: 'ross_tran', label: '🎨 Ross Tran' },
+      { value: 'makoto_shinkai', label: '🎨 Makoto Shinkai' },
+      { value: 'studio_ghibli', label: '🎨 Studio Ghibli' }
+    ],
+
+    artMedium: [
+      // Digital
+      { value: 'digital_art', label: '💻 Digital Art' },
+      { value: 'digital_painting', label: '🖌️ Digital Painting' },
+      { value: '3d_render', label: '🎮 3D Render' },
+      { value: 'concept_art', label: '🎨 Concept Art' },
+      
+      // Traditionnel
+      { value: 'oil_painting', label: '🖼️ Oil Painting' },
+      { value: 'watercolor', label: '💧 Watercolor' },
+      { value: 'pencil_drawing', label: '✏️ Pencil Drawing' },
+      
+      // Styles
+      { value: 'anime_style', label: '🎌 Anime Style' },
+      { value: 'manga_style', label: '📖 Manga Style' },
+      { value: 'comic_book_style', label: '📚 Comic Book Style' },
+      { value: 'photorealistic', label: '📷 Photorealistic' },
+      { value: 'hyperrealistic', label: '🔍 Hyperrealistic' },
+      { value: 'cel_shaded', label: '🎬 Cel Shaded' }
+    ]
+  },
 
   // ============================================
-  // 👖 VÊTEMENTS - BAS
+  // ⚙️ PARAMÈTRES TECHNIQUES
   // ============================================
-  bottomwear: [
-    // Casual
-    'jeans', 'pants', 'trousers', 'shorts',
-    'leggings', 'joggers', 'cargo pants', 'chinos',
-    
-    // Formel
-    'dress pants', 'suit pants', 'slacks',
-    
-    // Jupes/Robes
-    'skirt', 'mini skirt', 'long skirt', 'pleated skirt',
-    'dress', 'gown', 'sundress', 'cocktail dress',
-    
-    // Fantasy
-    'leather pants', 'armored leggings', 'greaves',
-    'robe bottom', 'long robe', 'battle skirt',
-    
-    // Moderne
-    'tactical pants', 'combat pants', 'cargo shorts',
-    'athletic shorts', 'bike shorts', 'yoga pants'
-  ],
-
-  // ============================================
-  // 🥾 CHAUSSURES
-  // ============================================
-  footwear: [
-    'boots', 'combat boots', 'knee-high boots', 'ankle boots',
-    'sneakers', 'running shoes', 'high heels', 'stilettos',
-    'sandals', 'flip-flops', 'loafers', 'oxfords',
-    'leather shoes', 'dress shoes', 'platform shoes',
-    'armored boots', 'steel-toed boots', 'riding boots',
-    'barefoot', 'bare feet', 'slippers', 'moccasins'
-  ],
-
-  // ============================================
-  // 💍 ACCESSOIRES
-  // ============================================
-  accessories: [
-    // Bijoux
-    'necklace', 'pendant', 'choker', 'collar',
-    'earrings', 'bracelet', 'ring', 'crown',
-    'tiara', 'circlet', 'diadem', 'armband',
-    
-    // Vêtements accessoires
-    'scarf', 'bandana', 'headband', 'hat',
-    'cap', 'beanie', 'fedora', 'top hat',
-    'gloves', 'fingerless gloves', 'gauntlets',
-    'belt', 'sash', 'bandolier',
-    
-    // Fantasy/Combat
-    'sword', 'dagger', 'staff', 'wand',
-    'bow', 'quiver', 'shield', 'spear',
-    'axe', 'hammer', 'mace', 'lance',
-    
-    // Moderne
-    'backpack', 'messenger bag', 'purse', 'satchel',
-    'sunglasses', 'glasses', 'goggles', 'eyepatch',
-    'watch', 'smartwatch', 'communicator',
-    
-    // Magique
-    'magical aura', 'glowing runes', 'enchanted jewelry',
-    'mystical symbols', 'arcane focus', 'spell book'
-  ],
-
-  // ============================================
-  // 🎭 POSES
-  // ============================================
-  pose: [
-    // Statiques
-    'standing', 'sitting', 'kneeling', 'crouching',
-    'lying down', 'leaning', 'resting', 'waiting',
-    
-    // Dynamiques
-    'running', 'jumping', 'flying', 'floating',
-    'walking', 'dancing', 'spinning', 'twirling',
-    'climbing', 'falling', 'diving', 'swimming',
-    
-    // Combat
-    'fighting stance', 'battle ready', 'wielding weapon',
-    'casting spell', 'drawing bow', 'sword raised',
-    'defensive pose', 'attacking', 'dodging', 'blocking',
-    
-    // Expressives
-    'arms crossed', 'hands on hips', 'reaching out',
-    'looking back', 'over shoulder', 'dramatic pose',
-    'heroic stance', 'confident pose', 'relaxed pose',
-    'mysterious pose', 'seductive pose', 'playful pose',
-    
-    // Interactions
-    'looking at viewer', 'looking away', 'looking up',
-    'looking down', 'eyes closed', 'smiling',
-    'laughing', 'serious expression', 'determined look'
-  ],
-
-  // ============================================
-  // 🌍 LIEUX
-  // ============================================
-  location: [
-    // Nature
-    'forest', 'dark forest', 'enchanted forest', 'jungle',
-    'mountains', 'mountain peak', 'cliff', 'valley',
-    'beach', 'ocean', 'lake', 'river', 'waterfall',
-    'desert', 'oasis', 'canyon', 'cave', 'grotto',
-    'meadow', 'field', 'garden', 'park',
-    
-    // Urbain
-    'city', 'cyberpunk city', 'futuristic city', 'ancient city',
-    'street', 'alley', 'rooftop', 'balcony',
-    'marketplace', 'plaza', 'square', 'shopping district',
-    
-    // Intérieur
-    'castle', 'palace', 'throne room', 'great hall',
-    'library', 'study', 'laboratory', 'workshop',
-    'bedroom', 'living room', 'kitchen', 'bathroom',
-    'tavern', 'inn', 'bar', 'restaurant',
-    'church', 'cathedral', 'temple', 'shrine',
-    'dungeon', 'prison', 'crypt', 'tomb',
-    
-    // Fantasy
-    'magical realm', 'ethereal plane', 'astral plane',
-    'floating island', 'sky kingdom', 'underwater city',
-    'elven city', 'dwarven halls', 'wizard tower',
-    
-    // Sci-fi
-    'spaceship', 'space station', 'alien world',
-    'cybernetic lab', 'holodeck', 'command center',
-    
-    // Atmosphère
-    'ruins', 'abandoned building', 'haunted mansion',
-    'battlefield', 'war zone', 'post-apocalyptic',
-    'steampunk city', 'victorian street', 'medieval town'
-  ],
-
-  // ============================================
-  // 🌤️ MOMENT DE LA JOURNÉE
-  // ============================================
-  timeOfDay: [
-    'dawn', 'sunrise', 'early morning', 'morning',
-    'midday', 'noon', 'afternoon', 'late afternoon',
-    'dusk', 'sunset', 'twilight', 'evening',
-    'night', 'midnight', 'late night', 'blue hour',
-    'golden hour', 'magic hour'
-  ],
-
-  // ============================================
-  // 💡 ÉCLAIRAGE
-  // ============================================
-  lighting: [
-    // Naturel
-    'natural lighting', 'sunlight', 'moonlight', 'starlight',
-    'soft lighting', 'harsh lighting', 'diffused light',
-    'rim lighting', 'backlighting', 'side lighting',
-    
-    // Artificiel
-    'studio lighting', 'dramatic lighting', 'cinematic lighting',
-    'neon lights', 'candle light', 'firelight', 'torch light',
-    'street lights', 'ambient lighting', 'spotlighting',
-    
-    // Atmosphère
-    'volumetric lighting', 'god rays', 'light rays',
-    'lens flare', 'bloom', 'glow', 'luminescence',
-    'bioluminescence', 'phosphorescence',
-    
-    // Ombres
-    'long shadows', 'dramatic shadows', 'soft shadows',
-    'chiaroscuro', 'high contrast', 'low contrast',
-    
-    // Couleurs
-    'warm lighting', 'cool lighting', 'blue tint',
-    'orange tint', 'purple hues', 'golden light',
-    'silver light', 'multicolored lights'
-  ],
-
-  // ============================================
-  // 🎨 ARTISTES (Style)
-  // ============================================
-  artist: [
-    // Classique
-    'Leonardo da Vinci', 'Michelangelo', 'Rembrandt',
-    'Caravaggio', 'Vermeer', 'Botticelli',
-    
-    // Impressionnisme
-    'Claude Monet', 'Pierre-Auguste Renoir', 'Edgar Degas',
-    'Paul Cézanne', 'Vincent van Gogh', 'Paul Gauguin',
-    
-    // Moderne
-    'Pablo Picasso', 'Salvador Dalí', 'René Magritte',
-    'Frida Kahlo', 'Gustav Klimt', 'Egon Schiele',
-    
-    // Fantasy/Illustration
-    'Frank Frazetta', 'Boris Vallejo', 'Luis Royo',
-    'Yoshitaka Amano', 'Ayami Kojima', 'Akihiko Yoshida',
-    'Alphonse Mucha', 'Kay Nielsen', 'Arthur Rackham',
-    
-    // Concept Art
-    'Syd Mead', 'H.R. Giger', 'Moebius', 'Chris Foss',
-    'Craig Mullins', 'Feng Zhu', 'Jaime Jones',
-    
-    // Digital/Contemporary
-    'Loish', 'Sakimichan', 'Ross Tran', 'Ilya Kuvshinov',
-    'Wlop', 'Guweiz', 'Artgerm', 'Range Murata',
-    
-    // Manga/Anime
-    'Hayao Miyazaki', 'Makoto Shinkai', 'Satoshi Kon',
-    'CLAMP', 'Range Murata', 'Akira Toriyama'
-  ],
-
-  // ============================================
-  // 🖼️ MEDIUM ARTISTIQUE
-  // ============================================
-  artMedium: [
-    // Digital
-    'digital art', 'digital painting', '3D render',
-    'photorealistic', 'hyperrealistic', 'concept art',
-    'matte painting', 'digital illustration',
-    
-    // Traditionnel
-    'oil painting', 'watercolor', 'acrylic painting',
-    'pencil drawing', 'charcoal', 'ink drawing',
-    'pastel', 'gouache', 'tempera',
-    
-    // Styles spécifiques
-    'anime style', 'manga style', 'comic book style',
-    'cartoon style', 'cel shaded', 'pixel art',
-    'vector art', 'low poly', 'voxel art',
-    
-    // Techniques
-    'airbrush', 'spray paint', 'stencil art',
-    'collage', 'mixed media', 'pointillism',
-    'impressionism', 'expressionism', 'surrealism',
-    'abstract', 'minimalist', 'maximalist',
-    
-    // Rendu
-    'unreal engine', 'octane render', 'vray',
-    'photoshop', 'procreate', 'clip studio paint',
-    
-    // Photo
-    'photography', 'portrait photography', 'fashion photography',
-    'cinematic photography', 'film grain', 'bokeh'
-  ],
-
-  // ============================================
-  // ⭐ QUALITÉ
-  // ============================================
-  quality: [
-    // Résolution
-    '8k', '4k', 'high resolution', 'ultra detailed',
-    'extremely detailed', 'insanely detailed',
-    'highly detailed', 'intricate details', 'fine details',
-    
-    // Netteté
-    'sharp focus', 'crisp', 'clear', 'defined',
-    'professional', 'masterpiece', 'award winning',
-    
-    // Composition
-    'trending on artstation', 'featured on behance',
-    'professional lighting', 'perfect composition',
-    'rule of thirds', 'golden ratio', 'balanced composition',
-    
-    // Style
-    'cinematic', 'dramatic', 'epic', 'stunning',
-    'breathtaking', 'beautiful', 'gorgeous', 'elegant',
-    'atmospheric', 'moody', 'ethereal', 'dreamy',
-    
-    // Technique
-    'professionally color graded', 'depth of field',
-    'bokeh', 'volumetric fog', 'ray tracing',
-    'global illumination', 'subsurface scattering',
-    'ambient occlusion', 'photorealistic lighting'
-  ],
-
-  // ============================================
-  // 🎬 CAMÉRA
-  // ============================================
-  camera: [
-    // Distance
-    'extreme close-up', 'close-up', 'medium shot',
-    'medium close-up', 'cowboy shot', 'full body shot',
-    'wide shot', 'extreme wide shot', 'establishing shot',
-    
-    // Angle
-    'eye level', 'low angle', 'high angle', 'dutch angle',
-    'birds eye view', 'worms eye view', 'over the shoulder',
-    'point of view shot', 'first person view',
-    
-    // Mouvement
-    'dynamic angle', 'dynamic pose', 'action shot',
-    'motion blur', 'speed lines', 'cinematic motion',
-    
-    // Cadrage
-    'centered', 'off-center', 'rule of thirds',
-    'symmetrical', 'asymmetrical', 'portrait orientation',
-    'landscape orientation', 'square format',
-    
-    // Profondeur
-    'shallow depth of field', 'deep focus',
-    'rack focus', 'bokeh background', 'blurred background',
-    'sharp foreground', 'layered composition'
-  ]
+  technical: {
+    quality: [
+      { value: '8k', label: '8K Resolution' },
+      { value: '4k', label: '4K Resolution' },
+      { value: 'ultra_detailed', label: '✨ Ultra Detailed' },
+      { value: 'highly_detailed', label: '🔍 Highly Detailed' },
+      { value: 'sharp_focus', label: '🎯 Sharp Focus' },
+      { value: 'masterpiece', label: '🏆 Masterpiece' },
+      { value: 'award_winning', label: '🏅 Award Winning' },
+      { value: 'professional', label: '💼 Professional' },
+      { value: 'trending_on_artstation', label: '📈 Trending on ArtStation' },
+      { value: 'cinematic', label: '🎬 Cinematic' },
+      { value: 'dramatic', label: '🎭 Dramatic' },
+      { value: 'epic', label: '⚡ Epic' },
+      { value: 'stunning', label: '🌟 Stunning' },
+      { value: 'beautiful', label: '✨ Beautiful' }
+    ]
+  }
 };
