@@ -1,26 +1,21 @@
-Structure du dossier pour le volume Samsung 980 Pro 2To
-Le numéro de série du volume est 9CA1-9BFE
-D:.
+D:\git\prompt
 |   .gitignore
 |   LICENSE
+|   Menu_boutons_accueil.txt
+|   Menu_boutons_accueil_reflexions.txt
 |   README.md
 |   tree.txt
 |   
++---api
+|       .env
+|       generate-prompt.js
+|       health.js
+|       
 +---backend
-|   |   .env
 |   |   .gitignore
 |   |   package.json
 |   |   test-curl.ps1
-|   |   vercel.json
 |   |   
-|   +---.vercel
-|   |       project.json
-|   |       README.txt
-|   |       
-|   +---api
-|   |       generate-prompt.js
-|   |       health.js
-|   |       
 |   \---utils
 |           systemPrompts.js
 |           
@@ -42,8 +37,8 @@ D:.
     |   |   vite.svg
     |   |   
     |   \---assets
-    |           index-BI7mTbJG.js
-    |           index-Ds425_FF.css
+    |           index-Bn9sP4Vj.js
+    |           index-DeZhmzqc.css
     |           
     +---node_modules
     |   |   .package-lock.json
@@ -119,7 +114,27 @@ D:.
     |   |       vite.cmd
     |   |       vite.ps1
     |   |       
+    |   +---.vite
+    |   |   \---deps
+    |   |           chunk-FPIAUHXR.js
+    |   |           chunk-FPIAUHXR.js.map
+    |   |           chunk-MOBP6DGC.js
+    |   |           chunk-MOBP6DGC.js.map
+    |   |           package.json
+    |   |           react-dom.js
+    |   |           react-dom.js.map
+    |   |           react-dom_client.js
+    |   |           react-dom_client.js.map
+    |   |           react.js
+    |   |           react.js.map
+    |   |           react_jsx-dev-runtime.js
+    |   |           react_jsx-dev-runtime.js.map
+    |   |           react_jsx-runtime.js
+    |   |           react_jsx-runtime.js.map
+    |   |           _metadata.json
+    |   |           
     |   +---.vite-temp
+    |   +---@ai-sdk
     |   +---@alloc
     |   |   \---quick-lru
     |   |           index.d.ts
@@ -1651,6 +1666,7 @@ D:.
     |   |                   index.d.ts
     |   |                   index.js
     |   |                   
+    |   +---@opentelemetry
     |   +---@rolldown
     |   |   \---pluginutils
     |   |       |   LICENSE
@@ -1680,6 +1696,7 @@ D:.
     |   |           README.md
     |   |           rollup.win32-x64-msvc.node
     |   |           
+    |   +---@standard-schema
     |   +---@types
     |   |   +---babel__core
     |   |   |       index.d.ts
@@ -1759,6 +1776,7 @@ D:.
     |   |       \---test-utils
     |   |               index.d.ts
     |   |               
+    |   +---@vercel
     |   +---@vitejs
     |   |   \---plugin-react
     |   |       |   LICENSE
@@ -10750,4 +10768,5 @@ D:.
         |       
         \---utils
                 negativePromptGenerator.js
+                tagConflicts.js
                 

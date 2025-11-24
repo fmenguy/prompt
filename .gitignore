@@ -1,3 +1,15 @@
+# Vercel
+.vercel/
+.vercel
+
+# Environments
+.env
+.env.local
+.env.*.local
+api/.env
+backend/.env
+frontend/.env
+
 # Dependencies
 node_modules/
 frontend/node_modules/
@@ -6,38 +18,18 @@ backend/node_modules/
 # Build outputs
 dist/
 frontend/dist/
-backend/dist/
 build/
-
-# Environment variables
-.env
-.env.local
-.env.production
-backend/.env
-frontend/.env
+.cache/
 
 # Logs
 *.log
 npm-debug.log*
-logs/
+yarn-debug.log*
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
 # IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# Vite
-frontend/.vite/
-
-# Temporary files
-*.tmp
-.cache/
-
-.vercel
-tree*
-package-lock.json
