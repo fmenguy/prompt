@@ -2,8 +2,7 @@
 node_modules/
 
 # Environment (CRITIQUE !)
-.env
-.env.local
+api/.env
 
 # Logs
 *.log
