@@ -49,8 +49,8 @@ function App() {
   const [negativePrompt, setNegativePrompt] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
   const [conflictWarning, setConflictWarning] = useState(null);
-  //const [isLoading, setIsLoading] = useState(false);
-  //const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const isTagSelected = (category, value) => {
     const selected = selectedTags[category];
@@ -178,42 +178,42 @@ function App() {
   };
 
 
-const generatePrompt = async () => {
-  //setIsLoading(true);
-  //setError(null);
-  
-  try {
-    const basePromptFromTags = Object.entries(selectedTags)
-      // eslint-disable-next-line no-unused-vars
-      .filter(([_, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
-      // eslint-disable-next-line no-unused-vars
-      .map(([category, value]) => {
-        if (Array.isArray(value)) {
-          return value.join(', ');
-        }
-        return value;
-      })
-      .join(', ');
+  const generatePrompt = async () => {
+    setIsLoading(true);
+    setError(null);
 
-    console.log('📦 Tags sélectionnés:', selectedTags);
-    console.log('📝 Base prompt généré:', basePromptFromTags);
+    try {
+      const basePromptFromTags = Object.entries(selectedTags)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
+        // eslint-disable-next-line no-unused-vars
+        .map(([category, value]) => {
+          if (Array.isArray(value)) {
+            return value.join(', ');
+          }
+          return value;
+        })
+        .join(', ');
 
-    const enhanced = await generateEnhancedPrompt(basePromptFromTags, selectedTags);
+      console.log('📦 Tags sélectionnés:', selectedTags);
+      console.log('📝 Base prompt généré:', basePromptFromTags);
 
-    // ✅ AJOUTE CE LOG ICI
-    console.log('🎨 PROMPT RETOURNÉ PAR MISTRAL:', enhanced);
-    console.log('🔍 Longueur du prompt:', enhanced.length, 'caractères');
-    
-    setEnhancedPrompt(enhanced);
-    setNegativePrompt(generateNegativePrompt(selectedTags));
-    
-  } catch (error) {
-    console.error('❌ Erreur génération prompt:', error);
-    //setError(error.message || 'Erreur lors de la génération du prompt');
-  } finally {
-    //setIsLoading(false);
-  }
-};
+      const enhanced = await generateEnhancedPrompt(basePromptFromTags, selectedTags);
+
+      // ✅ AJOUTE CE LOG ICI
+      console.log('🎨 PROMPT RETOURNÉ PAR MISTRAL:', enhanced);
+      console.log('🔍 Longueur du prompt:', enhanced.length, 'caractères');
+
+      setEnhancedPrompt(enhanced);
+      setNegativePrompt(generateNegativePrompt(selectedTags));
+
+    } catch (error) {
+      console.error('❌ Erreur génération prompt:', error);
+      setError(error.message || 'Erreur lors de la génération du prompt');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
 
@@ -306,12 +306,14 @@ const generatePrompt = async () => {
             {/* Generate Prompt */}
             <button
               onClick={generatePrompt}
-              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105"
+              disabled={isLoading}
+              className={`bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
+                }`}
             >
-              ✨ Générer le Prompt
+              {isLoading ? '⏳ Génération...' : '✨ Générer le Prompt'}
             </button>
 
-            
+
 
 
             {/* Clear All */}
@@ -627,6 +629,13 @@ const generatePrompt = async () => {
         {copySuccess && (
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/90 text-green-400 px-8 py-4 rounded-xl text-xl font-bold animate-pulse z-50 shadow-2xl border-2 border-green-500">
             ✅ {copySuccess}
+          </div>
+        )}
+
+        {/* Message d'erreur */}
+        {error && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-900/90 text-white px-8 py-4 rounded-xl text-lg font-bold z-50 shadow-2xl border-2 border-red-500 max-w-md">
+            ❌ {error}
           </div>
         )}
 
