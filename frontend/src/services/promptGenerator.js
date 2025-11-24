@@ -1,6 +1,6 @@
 // frontend/src/services/promptGenerator.js
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL; 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 // ──────────────────────────────────────────────────
@@ -46,8 +46,8 @@ function generateAgeDescription(ageRange, gender) {
 // ──────────────────────────────────────────────────
 // FONCTION PRINCIPALE
 // ──────────────────────────────────────────────────
-export async function generateEnhancedPrompt(selectedTags, options = {}) {
-  const { characterCount = 1 } = options;
+export async function generateEnhancedPrompt(selectedTags = {}) {
+
 
   console.log('Génération du prompt avec:', selectedTags);
 
@@ -69,13 +69,11 @@ export async function generateEnhancedPrompt(selectedTags, options = {}) {
   };
 
   // Payload pour l'API
-  const payload = {
-    characterCount,
-    selectedTags: {
-      ...tags,
-      ageDescription,
-    },
-  };
+const payload = {
+  selectedTags: tags,
+  subjectData: subjectData,  // ← Ajoute ça !
+  context: null  // Optionnel
+};
 
   // Appel API
   const controller = new AbortController();

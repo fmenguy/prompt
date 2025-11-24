@@ -1,11 +1,8 @@
 {
-  "name": "prompt-generator-backend",
+  "name": "prompt-generator-api",
   "version": "1.0.0",
   "type": "module",
-  "main": "api/generate-prompt.js",
-  "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.3.1",
     "node-fetch": "^3.3.2"
   }
 }
