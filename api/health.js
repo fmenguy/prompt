@@ -1,3 +1,5 @@
+// api/health.js
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,11 +14,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
-  const hfStatus = process.env.HF_TOKEN ? 'connected' : 'missing';
+  // ✅ Vérifier MISTRAL_API_KEY au lieu de HF_TOKEN
+  const mistralStatus = process.env.MISTRAL_API_KEY ? 'connected' : 'missing';
 
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    huggingface: hfStatus
+    mistral: mistralStatus,
+    environment: process.env.NODE_ENV || 'development'
   });
 }
