@@ -122,13 +122,13 @@ let subjectPrefix = '';
 if (selectedTags.gender === 'female') {
   if (['child', 'teen', 'young_adult'].includes(selectedTags.age)) {
     subjectPrefix = '1girl';
-  } else if (['adult', 'mature', 'elder'].includes(selectedTags.age)) {
+  } else if (['adult', 'middle_aged', 'mature', 'elder'].includes(selectedTags.age)) {
     subjectPrefix = '1woman';
   }
 } else if (selectedTags.gender === 'male') {
   if (['child', 'teen', 'young_adult'].includes(selectedTags.age)) {
     subjectPrefix = '1boy';
-  } else if (['adult', 'mature', 'elder'].includes(selectedTags.age)) {
+  } else if (['adult', 'middle_aged', 'mature', 'elder'].includes(selectedTags.age)) {
     subjectPrefix = '1man';
   }
 }

@@ -8,28 +8,43 @@ export const tagConflicts = {
   // ══════════════════════════════════════════
   // APPARENCE PHYSIQUE
   // ══════════════════════════════════════════
-species: {
-  'human': ['elf', 'dwarf', 'orc', 'vampire', 'fairy', 'cyborg'],
-  'elf': ['human', 'dwarf', 'orc', 'cyborg'],
-  'dwarf': ['human', 'elf', 'orc', 'vampire', 'fairy', 'cyborg'],
-  'orc': ['human', 'elf', 'dwarf', 'vampire', 'fairy', 'cyborg'],
-  'vampire': ['human', 'dwarf', 'orc', 'fairy', 'cyborg'],
-  'fairy': ['human', 'dwarf', 'orc', 'vampire', 'cyborg'],
-  'cyborg': ['human', 'elf', 'dwarf', 'orc', 'vampire', 'fairy'],
-},
+  species: {
+    'human': ['elf', 'dwarf', 'orc', 'vampire', 'fairy', 'cyborg'],
+    'elf': ['human', 'dwarf', 'orc', 'cyborg'],
+    'dwarf': ['human', 'elf', 'orc', 'vampire', 'fairy', 'cyborg'],
+    'orc': ['human', 'elf', 'dwarf', 'vampire', 'fairy', 'cyborg'],
+    'vampire': ['human', 'dwarf', 'orc', 'fairy', 'cyborg'],
+    'fairy': ['human', 'dwarf', 'orc', 'vampire', 'cyborg'],
+    'cyborg': ['human', 'elf', 'dwarf', 'orc', 'vampire', 'fairy'],
+  },
 
-//ou en tout compatible : 
-/*
-species: {
-  'human': [],
-  'elf': [],
-  'dwarf': [],
-  'orc': [],
-  'vampire': [],
-  'fairy': [],
-  'cyborg': [],
-},
-*/
+  //ou en tout compatible : 
+  /*
+  species: {
+    'human': [],
+    'elf': [],
+    'dwarf': [],
+    'orc': [],
+    'vampire': [],
+    'fairy': [],
+    'cyborg': [],
+  },
+  */
+
+  age: {
+    'child': ['adult', 'middle_aged', 'mature', 'elder'],
+    'teen': ['adult', 'middle_aged', 'mature', 'elder'],
+    'young_adult': ['child', 'mature', 'elder'],
+    'adult': ['child', 'teen'],
+    'middle_aged': ['child', 'teen'],
+    'mature': ['child', 'teen', 'young_adult'],
+    'elder': ['child', 'teen', 'young_adult']
+  },
+
+  gender: {
+    'male': ['female'],
+    'female': ['male']
+  },
 
   bodyType: {
     'petite': ['muscular', 'curvy', 'athletic', 'voluptuous'],
@@ -172,14 +187,14 @@ export function getConflictingTags(category, newTag, selectedTags) {
   }
 
   const categoryConflicts = tagConflicts[category];
-  
+
   // ✅ Vérifier que le tag a des conflits définis
   if (!categoryConflicts[newTag]) {
     return conflicts; // ✅ Pas de conflits = array vide
   }
 
   const conflictList = categoryConflicts[newTag];
-  
+
   // ✅ Récupérer les tags actuels (gère single-select et multi-select)
   let currentTags = selectedTags[category];
   if (!Array.isArray(currentTags)) {
@@ -213,7 +228,7 @@ export function removeConflictingTags(selectedTags, conflicts) {
 
   conflicts.forEach(({ category, tag }) => {
     const current = updated[category];
-    
+
     if (Array.isArray(current)) {
       // Multi-select: retire le tag du tableau
       updated[category] = current.filter(t => t !== tag);
