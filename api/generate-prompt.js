@@ -23,9 +23,9 @@ export default async function handler(req, res) {
     const { basePrompt, selectedTags } = req.body;
 
     if (!selectedTags || Object.keys(selectedTags).length === 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'No tags selected' 
+        error: 'No tags selected'
       });
     }
 
@@ -115,23 +115,46 @@ export default async function handler(req, res) {
     const context = buildContext();
 
     // ========================================
-    // 💬 PROMPT SYSTÈME
-    // ========================================
-    const systemPrompt = `You are an expert at creating Stable Diffusion prompts.
+// 🎯 DÉTECTION DU PRÉFIXE (1girl/1woman/1boy/1man)
+// ========================================
+let subjectPrefix = '';
+
+if (selectedTags.gender === 'female') {
+  if (['child', 'teen', 'young_adult'].includes(selectedTags.age)) {
+    subjectPrefix = '1girl';
+  } else if (['adult', 'mature', 'elder'].includes(selectedTags.age)) {
+    subjectPrefix = '1woman';
+  }
+} else if (selectedTags.gender === 'male') {
+  if (['child', 'teen', 'young_adult'].includes(selectedTags.age)) {
+    subjectPrefix = '1boy';
+  } else if (['adult', 'mature', 'elder'].includes(selectedTags.age)) {
+    subjectPrefix = '1man';
+  }
+}
+
+console.log('🎯 Subject prefix detected:', subjectPrefix || 'none');
+
+// ========================================
+// 💬 PROMPT SYSTÈME
+// ========================================
+const systemPrompt = `You are an expert at creating Stable Diffusion prompts.
 
 **STRICT RULES:**
-1. Generate ONLY the optimized prompt, no introduction
-2. Use precise, descriptive English terms
-3. Separate concepts with commas
-4. Structure: subject → traits → appearance → clothing → pose → environment → style
-5. Maximum 200 words
-6. NO quotes, NO explanations, JUST the prompt
+${subjectPrefix ? `1. ALWAYS START with "${subjectPrefix}"` : '1. Start with the main subject'}
+2. Generate ONLY the optimized prompt, no introduction
+3. Use precise, descriptive English terms
+4. Separate concepts with commas
+5. Structure: ${subjectPrefix || 'subject'} → traits → appearance → clothing → pose → environment → style
+6. Maximum 200 words
+7. NO quotes, NO explanations, JUST the prompt
 
 **EXAMPLE OUTPUT:**
-elderly female elf warrior, muscular athletic build, medium-length straight blue hair flowing naturally, striking golden eyes reflecting sadness, wearing dramatic flowing cape over tactical cargo pants, standing confidently on mystical floating island, soft morning light, warm golden hour atmosphere, cel-shaded anime art style, highly detailed, masterpiece quality, 8k resolution`;
+${subjectPrefix || '1woman'}, adult female vampire, petite build, medium chest, medium-length spiky curly blue hair...`;
 
-    const userMessage = `Create a professional Stable Diffusion prompt from:
+const userMessage = `Create a professional Stable Diffusion prompt from:
 
+${subjectPrefix ? `⚠️ MANDATORY: Start with "${subjectPrefix}"\n` : ''}
 BASE TAGS: ${basePrompt}
 
 ATTRIBUTES:

@@ -1,0 +1,55 @@
+┌─────────────────────────────────────────────────────────────┐
+│ 1️⃣ USER CLIQUE SUR "✨ Générer le Prompt"                   │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 2️⃣ App.jsx → fonction generatePrompt()                      │
+│    - Récupère selectedTags                                  │
+│    - Construit basePromptFromTags                           │
+│    - Appelle generateEnhancedPrompt()                       │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 3️⃣ frontend/src/services/promptGenerator.js                 │
+│    export async function generateEnhancedPrompt(base, tags) │
+│    {                                                         │
+│      fetch(`${API_URL}/api/generate-prompt`, {              │
+│        method: 'POST',                                       │
+│        body: JSON.stringify({ basePrompt, selectedTags })   │
+│      })                                                      │
+│    }                                                         │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 4️⃣ BACKEND: api/generate-prompt.js (Vercel Serverless)     │
+│    - Reçoit { basePrompt, selectedTags }                    │
+│    - Construit le contexte structuré                        │
+│    - Détecte le préfixe (1girl/1woman/etc.)                 │
+│    - Appelle Mistral API                                    │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 5️⃣ MISTRAL API (externe)                                    │
+│    - Reçoit systemPrompt + userMessage                      │
+│    - Génère le prompt optimisé                              │
+│    - Retourne { choices: [{ message: { content: "..." }}] } │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 6️⃣ BACKEND: api/generate-prompt.js                          │
+│    - Nettoie le prompt (supprime guillemets, etc.)          │
+│    - Retourne { success: true, generatedPrompt: "..." }     │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 7️⃣ frontend/src/services/promptGenerator.js                 │
+│    - Reçoit la réponse JSON                                 │
+│    - Retourne data.generatedPrompt                          │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 8️⃣ App.jsx → generatePrompt()                               │
+│    - setEnhancedPrompt(enhanced)                            │
+│    - setNegativePrompt(generateNegativePrompt(tags))        │
+│    - Affiche dans l'UI                                      │
+└─────────────────────────────────────────────────────────────┘
