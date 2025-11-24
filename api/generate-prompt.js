@@ -1,149 +1,148 @@
-// backend/api/generate-prompt.js
+// api/generate-prompt.js
 
 export default async function handler(req, res) {
   // ========================================
-  // 🔒 CORS & SÉCURITÉ
+  // 🔒 CORS
   // ========================================
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Méthode non autorisée' });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-
-  // Vérification de la clé API
-  const apiKey = req.headers['x-api-key'];
-  if (apiKey !== process.env.API_KEY) {
-    return res.status(401).json({ error: 'Non autorisé' });
-  }
-
-  // ========================================
-  // 📥 RÉCUPÉRATION DES DONNÉES
-  // ========================================
-  const { basePrompt, selectedTags } = req.body;
-
-  if (!basePrompt || !selectedTags) {
-    return res.status(400).json({ 
-      error: 'basePrompt et selectedTags requis' 
-    });
-  }
-
-  console.log('📨 Requête reçue:', { basePrompt, tagsCount: Object.keys(selectedTags).length });
-
-  // ========================================
-  // 🏗️ CONSTRUCTION DU CONTEXTE
-  // ========================================
-  const buildContext = () => {
-    const parts = [];
-    
-    // Sujet principal
-    if (selectedTags.subject?.length > 0) {
-      parts.push(`Subject: ${selectedTags.subject.join(', ')}`);
-    }
-    
-    // Caractéristiques physiques
-    const physical = [];
-    if (selectedTags.gender) physical.push(selectedTags.gender);
-    if (selectedTags.age) physical.push(`${selectedTags.age.min}-${selectedTags.age.max} years old`);
-    if (selectedTags.species) physical.push(selectedTags.species);
-    if (selectedTags.bodyType) physical.push(selectedTags.bodyType);
-    if (physical.length > 0) {
-      parts.push(`Physical: ${physical.join(', ')}`);
-    }
-    
-    // Apparence
-    const appearance = [];
-    if (selectedTags.hairLength) appearance.push(`${selectedTags.hairLength} hair`);
-    if (selectedTags.hairColor) appearance.push(`${selectedTags.hairColor} hair`);
-    if (selectedTags.hairStyle?.length > 0) appearance.push(selectedTags.hairStyle.join(', '));
-    if (selectedTags.eyes) appearance.push(`${selectedTags.eyes} eyes`);
-    if (selectedTags.facialExpression) appearance.push(selectedTags.facialExpression);
-    if (appearance.length > 0) {
-      parts.push(`Appearance: ${appearance.join(', ')}`);
-    }
-    
-    // Vêtements
-    const clothing = [];
-    if (selectedTags.topwear) clothing.push(selectedTags.topwear);
-    if (selectedTags.bottomwear) clothing.push(selectedTags.bottomwear);
-    if (selectedTags.footwear) clothing.push(selectedTags.footwear);
-    if (selectedTags.accessories?.length > 0) clothing.push(selectedTags.accessories.join(', '));
-    if (clothing.length > 0) {
-      parts.push(`Clothing: ${clothing.join(', ')}`);
-    }
-    
-    // Pose et cadrage
-    const composition = [];
-    if (selectedTags.pose) composition.push(selectedTags.pose);
-    if (selectedTags.viewpoint) composition.push(selectedTags.viewpoint);
-    if (composition.length > 0) {
-      parts.push(`Composition: ${composition.join(', ')}`);
-    }
-    
-    // Environnement
-    const environment = [];
-    if (selectedTags.location) environment.push(selectedTags.location);
-    if (selectedTags.timeOfDay) environment.push(selectedTags.timeOfDay);
-    if (selectedTags.lighting) environment.push(selectedTags.lighting);
-    if (selectedTags.weather) environment.push(selectedTags.weather);
-    if (environment.length > 0) {
-      parts.push(`Environment: ${environment.join(', ')}`);
-    }
-    
-    // Style artistique
-    const style = [];
-    if (selectedTags.artMedium) style.push(selectedTags.artMedium);
-    if (selectedTags.quality?.length > 0) style.push(selectedTags.quality.join(', '));
-    if (style.length > 0) {
-      parts.push(`Style: ${style.join(', ')}`);
-    }
-    
-    return parts.join('\n');
-  };
-
-  const context = buildContext();
-
-  // ========================================
-  // 💬 CONSTRUCTION DU PROMPT SYSTÈME
-  // ========================================
-  const systemPrompt = `Tu es un expert en création de prompts pour Stable Diffusion. 
-
-**RÈGLES STRICTES :**
-1. Génère UNIQUEMENT le prompt optimisé, sans introduction ni explication
-2. Utilise des termes précis et descriptifs
-3. Sépare les concepts par des virgules
-4. Privilégie l'anglais technique
-5. Maximum 200 mots
-6. Structure : sujet → apparence → vêtements → pose → environnement → style artistique
-7. N'ajoute JAMAIS de texte avant ou après le prompt
-8. Ne mets AUCUN guillemet autour du prompt
-
-**EXEMPLE DE SORTIE VALIDE :**
-masterpiece, best quality, 1girl, young woman, 20 years old, athletic build, long flowing blonde hair, blue eyes, confident smile, wearing red leather jacket, black jeans, standing pose, three-quarter view, urban street at sunset, golden hour lighting, photorealistic, 8k, highly detailed`;
-
-  // ========================================
-  // 🎨 CONSTRUCTION DU MESSAGE UTILISATEUR
-  // ========================================
-  const userMessage = `Transforme cette demande en prompt professionnel pour Stable Diffusion :
-
-DEMANDE DE BASE :
-"${basePrompt}"
-
-TAGS SÉLECTIONNÉS :
-${context}
-
-Génère maintenant un prompt optimisé qui combine harmonieusement la demande de base et tous les tags. Le prompt doit être fluide, cohérent et directement utilisable dans Stable Diffusion.`;
-
-  console.log('🎯 Envoi vers Mistral AI...');
 
   try {
     // ========================================
-    // 🚀 APPEL À L'API MISTRAL OFFICIELLE
+    // 📥 RÉCUPÉRATION DES DONNÉES
+    // ========================================
+    const { basePrompt, selectedTags } = req.body;
+
+    if (!selectedTags || Object.keys(selectedTags).length === 0) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'No tags selected' 
+      });
+    }
+
+    console.log('📨 Request received');
+    console.log('📝 Base prompt:', basePrompt);
+    console.log('🏷️ Tags count:', Object.keys(selectedTags).length);
+
+    // ========================================
+    // 🏗️ CONSTRUCTION DU CONTEXTE
+    // ========================================
+    const buildContext = () => {
+      const parts = [];
+
+      // 👤 SUJET
+      if (selectedTags.subject?.length > 0) {
+        parts.push(`Subject: ${selectedTags.subject.join(', ')}`);
+      }
+
+      // 🧬 PHYSIQUE
+      const physical = [];
+      if (selectedTags.age) physical.push(selectedTags.age);
+      if (selectedTags.gender) physical.push(selectedTags.gender);
+      if (selectedTags.species) physical.push(selectedTags.species);
+      if (selectedTags.bodyType) physical.push(`${selectedTags.bodyType} build`);
+      if (selectedTags.breastSize) physical.push(`${selectedTags.breastSize} chest`);
+      if (selectedTags.buttSize) physical.push(`${selectedTags.buttSize} figure`);
+      if (physical.length > 0) {
+        parts.push(`Physical: ${physical.join(', ')}`);
+      }
+
+      // 💇 APPARENCE
+      const appearance = [];
+      if (selectedTags.hairLength) appearance.push(selectedTags.hairLength.replace(/_/g, ' '));
+      if (selectedTags.hairColor) appearance.push(`${selectedTags.hairColor} hair`);
+      if (selectedTags.hairStyle?.length > 0) {
+        appearance.push(selectedTags.hairStyle.map(s => s.replace(/_/g, ' ')).join(', '));
+      }
+      if (selectedTags.eyes) appearance.push(`${selectedTags.eyes.replace(/_/g, ' ')} eyes`);
+      if (selectedTags.facialExpression) appearance.push(selectedTags.facialExpression);
+      if (appearance.length > 0) {
+        parts.push(`Appearance: ${appearance.join(', ')}`);
+      }
+
+      // 👗 VÊTEMENTS
+      const clothing = [];
+      if (selectedTags.topwear) clothing.push(selectedTags.topwear.replace(/_/g, ' '));
+      if (selectedTags.bottomwear) clothing.push(selectedTags.bottomwear.replace(/_/g, ' '));
+      if (selectedTags.footwear) clothing.push(selectedTags.footwear);
+      if (selectedTags.accessories?.length > 0) {
+        clothing.push(selectedTags.accessories.map(a => a.replace(/_/g, ' ')).join(', '));
+      }
+      if (clothing.length > 0) {
+        parts.push(`Clothing: ${clothing.join(', ')}`);
+      }
+
+      // 📸 COMPOSITION
+      const composition = [];
+      if (selectedTags.pose) composition.push(selectedTags.pose.replace(/_/g, ' '));
+      if (selectedTags.viewpoint) composition.push(selectedTags.viewpoint.replace(/_/g, ' '));
+      if (composition.length > 0) {
+        parts.push(`Composition: ${composition.join(', ')}`);
+      }
+
+      // 🌍 ENVIRONNEMENT
+      const environment = [];
+      if (selectedTags.location) environment.push(selectedTags.location.replace(/_/g, ' '));
+      if (selectedTags.timeOfDay) environment.push(selectedTags.timeOfDay.replace(/_/g, ' '));
+      if (selectedTags.lighting) environment.push(selectedTags.lighting.replace(/_/g, ' '));
+      if (selectedTags.weather) environment.push(selectedTags.weather);
+      if (environment.length > 0) {
+        parts.push(`Environment: ${environment.join(', ')}`);
+      }
+
+      // 🎨 STYLE
+      const style = [];
+      if (selectedTags.artMedium) style.push(selectedTags.artMedium.replace(/_/g, ' '));
+      if (selectedTags.quality?.length > 0) {
+        style.push(selectedTags.quality.join(', '));
+      }
+      if (style.length > 0) {
+        parts.push(`Style: ${style.join(', ')}`);
+      }
+
+      return parts.join('\n');
+    };
+
+    const context = buildContext();
+
+    // ========================================
+    // 💬 PROMPT SYSTÈME
+    // ========================================
+    const systemPrompt = `You are an expert at creating Stable Diffusion prompts.
+
+**STRICT RULES:**
+1. Generate ONLY the optimized prompt, no introduction
+2. Use precise, descriptive English terms
+3. Separate concepts with commas
+4. Structure: subject → traits → appearance → clothing → pose → environment → style
+5. Maximum 200 words
+6. NO quotes, NO explanations, JUST the prompt
+
+**EXAMPLE OUTPUT:**
+elderly female elf warrior, muscular athletic build, medium-length straight blue hair flowing naturally, striking golden eyes reflecting sadness, wearing dramatic flowing cape over tactical cargo pants, standing confidently on mystical floating island, soft morning light, warm golden hour atmosphere, cel-shaded anime art style, highly detailed, masterpiece quality, 8k resolution`;
+
+    const userMessage = `Create a professional Stable Diffusion prompt from:
+
+BASE TAGS: ${basePrompt}
+
+ATTRIBUTES:
+${context}
+
+Combine naturally into one cohesive, flowing prompt.`;
+
+    console.log('🎯 Calling Mistral API...');
+
+    // ========================================
+    // 🚀 APPEL MISTRAL
     // ========================================
     const mistralResponse = await fetch(
       'https://api.mistral.ai/v1/chat/completions',
@@ -154,19 +153,13 @@ Génère maintenant un prompt optimisé qui combine harmonieusement la demande d
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: "open-mistral-7b", // fme :model gratuit normalement !
+          model: "mistral-small-latest",
           messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            {
-              role: "user",
-              content: userMessage
-            }
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
           ],
-          max_tokens: 500,
-          temperature: 0.75,
+          max_tokens: 400,
+          temperature: 0.7,
           top_p: 0.9
         })
       }
@@ -174,38 +167,38 @@ Génère maintenant un prompt optimisé qui combine harmonieusement la demande d
 
     if (!mistralResponse.ok) {
       const errorText = await mistralResponse.text();
-      console.error('❌ Erreur Mistral:', errorText);
-      throw new Error(`Mistral API: ${mistralResponse.status} - ${errorText}`);
+      console.error('❌ Mistral error:', mistralResponse.status, errorText);
+      throw new Error(`Mistral API error: ${mistralResponse.status}`);
     }
 
     const data = await mistralResponse.json();
-    console.log('✅ Réponse Mistral reçue');
+    console.log('✅ Mistral response received');
 
     // ========================================
-    // 🧹 NETTOYAGE DE LA RÉPONSE
+    // 🧹 NETTOYAGE
     // ========================================
     let generatedPrompt = data.choices[0].message.content.trim();
-    
-    // Suppression des guillemets éventuels
+
+    // Suppression guillemets
     generatedPrompt = generatedPrompt.replace(/^["']|["']$/g, '');
-    
-    // Suppression des phrases d'introduction
-    const introPatterns = [
-      /^(here is|here's|voici|voilà|the prompt is|prompt:|enhanced prompt:)\s*/i,
-      /^.*?:\s*/  // Tout ce qui se termine par ":"
+
+    // Suppression introductions courantes
+    const cleanPatterns = [
+      /^(here is|here's|voici|the prompt is|prompt:|enhanced prompt:)\s*/i,
+      /^.*?:\s*/
     ];
-    
-    introPatterns.forEach(pattern => {
+
+    cleanPatterns.forEach(pattern => {
       generatedPrompt = generatedPrompt.replace(pattern, '');
     });
-    
+
     // Nettoyage final
     generatedPrompt = generatedPrompt
-      .replace(/\s+/g, ' ')  // Espaces multiples
-      .replace(/,\s*,/g, ',')  // Virgules doubles
+      .replace(/\s+/g, ' ')
+      .replace(/,\s*,/g, ',')
       .trim();
 
-    console.log('✨ Prompt nettoyé:', generatedPrompt.substring(0, 100) + '...');
+    console.log('✨ Final prompt length:', generatedPrompt.length);
 
     // ========================================
     // 📤 RÉPONSE
@@ -213,15 +206,16 @@ Génère maintenant un prompt optimisé qui combine harmonieusement la demande d
     return res.status(200).json({
       success: true,
       generatedPrompt: generatedPrompt,
-      model: 'open-mistral-7b',
+      model: 'mistral-small-latest',
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
-    console.error('💥 Erreur:', error);
+    console.error('💥 Fatal error:', error.message);
     return res.status(500).json({
-      error: 'Erreur lors de la génération',
-      details: error.message
+      success: false,
+      error: 'Generation failed',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 }

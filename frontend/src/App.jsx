@@ -178,40 +178,42 @@ function App() {
   };
 
 
-  const generatePrompt = async () => {
-    setIsLoading(true);
-    setError(null);
+const generatePrompt = async () => {
+  setIsLoading(true);
+  setError(null);
+  
+  try {
+    const basePromptFromTags = Object.entries(selectedTags)
+      // eslint-disable-next-line no-unused-vars
+      .filter(([_, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
+      // eslint-disable-next-line no-unused-vars
+      .map(([category, value]) => {
+        if (Array.isArray(value)) {
+          return value.join(', ');
+        }
+        return value;
+      })
+      .join(', ');
 
-    try {
-      // ✅ Convertir les tags sélectionnés en texte de base
-      const basePromptFromTags = Object.entries(selectedTags)
-        // eslint-disable-next-line no-unused-vars
-        .filter(([_, value]) => value && (Array.isArray(value) ? value.length > 0 : true))
-        // eslint-disable-next-line no-unused-vars
-        .map(([category, value]) => {
-          if (Array.isArray(value)) {
-            return value.join(', ');
-          }
-          return value;
-        })
-        .join(', ');
+    console.log('📦 Tags sélectionnés:', selectedTags);
+    console.log('📝 Base prompt généré:', basePromptFromTags);
 
-      console.log('📦 Tags sélectionnés:', selectedTags);
-      console.log('📝 Base prompt généré:', basePromptFromTags);
+    const enhanced = await generateEnhancedPrompt(basePromptFromTags, selectedTags);
 
-      // ✅ Envoyer à Mistral pour amélioration
-      const enhanced = await generateEnhancedPrompt(basePromptFromTags, selectedTags);
-
-      setEnhancedPrompt(enhanced);
-      setNegativePrompt(generateNegativePrompt(selectedTags));
-
-    } catch (error) {
-      console.error('❌ Erreur génération prompt:', error);
-      setError(error.message || 'Erreur lors de la génération du prompt');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // ✅ AJOUTE CE LOG ICI
+    console.log('🎨 PROMPT RETOURNÉ PAR MISTRAL:', enhanced);
+    console.log('🔍 Longueur du prompt:', enhanced.length, 'caractères');
+    
+    setEnhancedPrompt(enhanced);
+    setNegativePrompt(generateNegativePrompt(selectedTags));
+    
+  } catch (error) {
+    console.error('❌ Erreur génération prompt:', error);
+    setError(error.message || 'Erreur lors de la génération du prompt');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
 
