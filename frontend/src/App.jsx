@@ -49,8 +49,8 @@ function App() {
   const [negativePrompt, setNegativePrompt] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
   const [conflictWarning, setConflictWarning] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  //const [isLoading, setIsLoading] = useState(false);
+  //const [error, setError] = useState(null);
 
   const isTagSelected = (category, value) => {
     const selected = selectedTags[category];
@@ -179,8 +179,8 @@ function App() {
 
 
 const generatePrompt = async () => {
-  setIsLoading(true);
-  setError(null);
+  //setIsLoading(true);
+  //setError(null);
   
   try {
     const basePromptFromTags = Object.entries(selectedTags)
@@ -209,9 +209,9 @@ const generatePrompt = async () => {
     
   } catch (error) {
     console.error('❌ Erreur génération prompt:', error);
-    setError(error.message || 'Erreur lors de la génération du prompt');
+    //setError(error.message || 'Erreur lors de la génération du prompt');
   } finally {
-    setIsLoading(false);
+    //setIsLoading(false);
   }
 };
 
@@ -303,80 +303,15 @@ const generatePrompt = async () => {
               🎲 42 !
             </button>
 
-            {/* Generate Prompt 
+            {/* Generate Prompt */}
             <button
               onClick={generatePrompt}
               className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105"
             >
               ✨ Générer le Prompt
-            </button>*/}
-
-            <button
-              onClick={generatePrompt}
-              disabled={isLoading || Object.keys(selectedTags).length === 0}
-              className={`w-full px-8 py-4 rounded-xl font-bold text-lg transition-all ${isLoading || Object.keys(selectedTags).length === 0
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl'
-                }`}
-            >
-              {isLoading ? '⏳ Génération...' : '✨ Générer le Prompt'}
             </button>
 
-
-
-
-            {/* 📋 RÉSULTATS */}
-            <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl">
-              <h2 className="text-2xl font-bold text-white mb-8">Résultats</h2>
-
-              {/* ✅ Affichage erreur */}
-              {error && (
-                <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg">
-                  <p className="text-red-200">❌ {error}</p>
-                </div>
-              )}
-
-              {/* ✅ Affichage loading */}
-              {isLoading && (
-                <div className="mb-6 p-4 bg-blue-900/50 border border-blue-500 rounded-lg">
-                  <p className="text-blue-200 animate-pulse">⏳ Génération en cours...</p>
-                </div>
-              )}
-
-              {/* Enhanced Prompt */}
-              {enhancedPrompt && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold text-green-400 mb-3">✨ Prompt Amélioré</h3>
-                  <div className="bg-gray-900 p-4 rounded-lg">
-                    <p className="text-gray-300 whitespace-pre-wrap">{enhancedPrompt}</p>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(enhancedPrompt)}
-                      className="mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                    >
-                      📋 Copier
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Negative Prompt */}
-              {negativePrompt && (
-                <div>
-                  <h3 className="text-xl font-semibold text-red-400 mb-3">🚫 Negative Prompt</h3>
-                  <div className="bg-gray-900 p-4 rounded-lg">
-                    <p className="text-gray-300 whitespace-pre-wrap">{negativePrompt}</p>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(negativePrompt)}
-                      className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                    >
-                      📋 Copier
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-
+            
 
 
             {/* Clear All */}
