@@ -7,8 +7,11 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
  */
 export async function generateEnhancedPrompt(basePrompt, selectedTags) {
   
-  if (!basePrompt?.trim()) {
-    throw new Error('Le prompt de base ne peut pas être vide');
+  // ✅ Validation : soit basePrompt, soit selectedTags doit avoir du contenu
+  const hasContent = basePrompt?.trim() || Object.keys(selectedTags || {}).length > 0;
+  
+  if (!hasContent) {
+    throw new Error('Aucun tag sélectionné. Veuillez sélectionner au moins un tag.');
   }
 
   console.log('🚀 Appel API génération prompt...');
@@ -22,14 +25,14 @@ export async function generateEnhancedPrompt(basePrompt, selectedTags) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        basePrompt: basePrompt.trim(),
-        selectedTags
+        basePrompt: basePrompt || '', // ✅ Peut être vide si on a des tags
+        selectedTags: selectedTags || {}
       })
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Erreur HTTP ${response.status}`);
+      throw new Error(errorData.error || `Erreur serveur (${response.status})`);
     }
 
     const data = await response.json();
@@ -45,7 +48,7 @@ export async function generateEnhancedPrompt(basePrompt, selectedTags) {
     console.error('❌ Erreur génération:', error);
     
     if (error.message.includes('Failed to fetch')) {
-      throw new Error('Impossible de contacter le serveur. Vérifiez votre connexion.');
+      throw new Error('Impossible de contacter le serveur. Vérifiez que l\'API est accessible.');
     }
     
     throw error;
