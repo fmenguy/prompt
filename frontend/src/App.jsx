@@ -52,8 +52,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  //Etat pour bandeau négatif
+  //Etat pour bandeau négatif - 27/11/2025
   const [showNegativePrompt, setShowNegativePrompt] = useState(false);
+  const [showNegativeExplanation, setShowNegativeExplanation] = useState(false);
 
   const isTagSelected = (category, value) => {
     const selected = selectedTags[category];
@@ -350,71 +351,82 @@ function App() {
               </div>
             </div>
 
-            {/* Bouton Prompt Négatif avec Explication */}
-            {negativePrompt && !showNegativePrompt && (
-              <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 shadow-2xl">
-                <h3 className="text-2xl font-bold text-white mb-4 text-center">
-                  ❓ Besoin du Prompt Négatif ?
-                </h3>
-                <div className="bg-gray-900 rounded-lg p-6 mb-6 text-gray-300 leading-relaxed">
-                  <p className="mb-4">
-                    <strong className="text-white">🎯 Le prompt négatif est nécessaire uniquement pour Stable Diffusion.</strong>
-                  </p>
-                  <p className="mb-3">
-                    ✅ <strong className="text-green-400">Vous n'en avez PAS besoin si vous utilisez :</strong>
-                  </p>
-                  <ul className="list-disc list-inside ml-4 mb-4 space-y-1">
-                    <li>Gemini (Google AI / Nano Banana)</li>
-                    <li>DALL-E (ChatGPT / OpenAI)</li>
-                    <li>Midjourney</li>
-                    <li>Ideogram</li>
-                  </ul>
-                  <p className="mb-3">
-                    ⚠️ <strong className="text-orange-400">Vous en avez besoin si vous utilisez :</strong>
-                  </p>
-                  <ul className="list-disc list-inside ml-4">
-                    <li>Stable Diffusion (Automatic1111, ComfyUI, etc.)</li>
-                    <li>Civitai</li>
-                    <li>RunDiffusion</li>
-                  </ul>
-                </div>
+            {/* Bouton Prompt Négatif (compact) */}
+            {negativePrompt && (
+              <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 shadow-2xl">
+
+                {/* Bouton titre cliquable */}
                 <button
-                  onClick={() => setShowNegativePrompt(true)}
-                  className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg"
+                  onClick={() => setShowNegativeExplanation(!showNegativeExplanation)}
+                  className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-6 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-3"
                 >
-                  🔓 Afficher le Prompt Négatif
+                  ⚠️ Si Stable Diffusion uniquement, cliquez ici
+                  <span className="text-2xl">{showNegativeExplanation ? '▲' : '▼'}</span>
                 </button>
+
+                {/* Explication dépliable */}
+                {showNegativeExplanation && (
+                  <div className="mt-6 bg-gray-900 rounded-lg p-6 text-gray-300 leading-relaxed space-y-4 animate-fadeIn">
+                    <p className="text-white font-semibold">
+                      🎯 Le prompt négatif est nécessaire uniquement pour Stable Diffusion.
+                    </p>
+
+                    <div>
+                      <p className="text-green-400 font-semibold mb-2">✅ Pas besoin si vous utilisez :</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-sm">
+                        <li>Gemini (Google AI / Nano Banana)</li>
+                        <li>DALL-E (ChatGPT / OpenAI)</li>
+                        <li>Midjourney</li>
+                        <li>Ideogram</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="text-orange-400 font-semibold mb-2">⚠️ Nécessaire si vous utilisez :</p>
+                      <ul className="list-disc list-inside ml-4 space-y-1 text-sm">
+                        <li>Stable Diffusion (Automatic1111, ComfyUI, etc.)</li>
+                        <li>Civitai</li>
+                        <li>RunDiffusion</li>
+                      </ul>
+                    </div>
+
+                    <button
+                      onClick={() => setShowNegativePrompt(true)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-colors mt-4"
+                    >
+                      🔓 Afficher le Prompt Négatif
+                    </button>
+                  </div>
+                )}
+
+                {/* Prompt Négatif (affiché après clic sur "Afficher") */}
+                {showNegativePrompt && (
+                  <div className="mt-6 bg-gray-900 rounded-lg p-6 animate-fadeIn">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-bold text-white">❌ Prompt Négatif</h3>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => copyToClipboard(negativePrompt, 'Prompt négatif')}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold transition-colors text-sm"
+                        >
+                          📋 Copier
+                        </button>
+                        <button
+                          onClick={() => setShowNegativePrompt(false)}
+                          className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg font-bold transition-colors text-sm"
+                        >
+                          ✖️
+                        </button>
+                      </div>
+                    </div>
+                    <div className="bg-gray-950 rounded-lg p-4 text-gray-200 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">
+                      {negativePrompt}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Prompt Négatif (affiché après clic) */}
-            {negativePrompt && showNegativePrompt && (
-              <div className="bg-gradient-to-r from-red-900 to-rose-900 rounded-2xl p-8 shadow-2xl">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-2xl font-bold text-white">❌ Prompt Négatif (Stable Diffusion)</h3>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => copyToClipboard(negativePrompt, 'Prompt négatif')}
-                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-colors"
-                    >
-                      📋 Copier
-                    </button>
-                    <button
-                      onClick={() => setShowNegativePrompt(false)}
-                      className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-bold transition-colors"
-                    >
-                      ✖️
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-gray-900 rounded-lg p-6 text-gray-200 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words">
-                  {negativePrompt}
-                </div>
-                <div className="mt-4 bg-yellow-900/30 border border-yellow-600/50 rounded-lg p-4 text-yellow-200 text-sm">
-                  ℹ️ <strong>Utilisation :</strong> Copiez ce texte dans le champ "Negative Prompt" de votre interface Stable Diffusion pour améliorer la qualité de vos générations.
-                </div>
-              </div>
-            )}
 
           </div>
         )}
