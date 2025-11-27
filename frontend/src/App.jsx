@@ -331,6 +331,9 @@ return (
         <p className="text-yellow-400 text-sm bg-gray-800 inline-block px-4 py-2 rounded-lg">
           💡 Astuce : La génération en anglais fonctionne mieux !
         </p>
+        <p className="text-center text-gray-400 text-sm mt-4">
+          💡 Astuce : Cliquez sur 📌 pour épingler un tag. Le bouton "42" conservera les tags épinglés !
+        </p>
       </div>
 
       {/* CONFLICT WARNING */}
@@ -359,12 +362,6 @@ return (
 
 
           {/* Surprise Me */}
-          {/* Légende Pin */}
-          <div className="text-center text-gray-400 text-sm mt-4">
-            💡 <strong>Astuce :</strong> Cliquez sur 📌 pour épingler un tag.
-            Le bouton "42" conservera les tags épinglés !
-          </div>
-
           <button
             onClick={surpriseMe}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105"
