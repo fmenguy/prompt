@@ -975,14 +975,11 @@ function App() {
               <span className="hidden sm:inline text-gray-600">|</span>
 
               <div className="flex gap-6">
-                <a href="https://fmenguy.fr/oai/" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+                <a href="https://fmenguy.fr/outils/oai/" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
                   OAI
                 </a>
-                <a href="https://fmenguy.fr/odia/" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300 transition-colors font-medium">
+                <a href="https://fmenguy.fr/outils/odia/" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300 transition-colors font-medium">
                   ODIA
-                </a>
-                <a href="https://fmenguy.fr/ocm/" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium">
-                  OCM
                 </a>
               </div>
             </div>
