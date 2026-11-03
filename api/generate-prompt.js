@@ -1,10 +1,48 @@
 // api/generate-prompt.js
 
+// Sites autorisés à appeler l'API depuis un navigateur
+const ORIGINES = ['https://aiprompt.fmenguy.fr', 'http://localhost:5173', 'http://localhost:3000'];
+
+// Catégories de tags acceptées (frontend/src/data/prompts.js) ; « subject » reste toujours vide côté interface
+const TAGS_SIMPLES = ['age', 'gender', 'species', 'bodyType', 'breastSize', 'buttSize', 'hairLength', 'hairColor', 'eyes',
+  'facialExpression', 'topwear', 'bottomwear', 'footwear', 'pose', 'viewpoint', 'location', 'timeOfDay', 'lighting',
+  'weather', 'artMedium'];
+const TAGS_MULTIPLES = ['hairStyle', 'accessories', 'quality'];
+const IDENTIFIANT = /^[a-z0-9_-]{1,40}$/;
+const MAX_PAR_CATEGORIE = 20;
+
+/**
+ * Ne garde que des identifiants de tags connus par leur forme : aucun texte libre n'atteint Mistral.
+ * Renvoie null si la requête contient autre chose.
+ */
+function validerTags(brut) {
+  if (!brut || typeof brut !== 'object' || Array.isArray(brut)) return null;
+  const tags = { subject: [] };
+  for (const [cle, valeur] of Object.entries(brut)) {
+    if (valeur === null || cle === 'subject' && Array.isArray(valeur) && valeur.length === 0) continue;
+    if (TAGS_SIMPLES.includes(cle)) {
+      if (typeof valeur !== 'string' || !IDENTIFIANT.test(valeur)) return null;
+      tags[cle] = valeur;
+    } else if (TAGS_MULTIPLES.includes(cle)) {
+      if (!Array.isArray(valeur) || valeur.length > MAX_PAR_CATEGORIE) return null;
+      if (!valeur.every((v) => typeof v === 'string' && IDENTIFIANT.test(v))) return null;
+      tags[cle] = valeur;
+    } else {
+      return null;
+    }
+  }
+  return tags;
+}
+
 export default async function handler(req, res) {
   // ========================================
   // 🔒 CORS
   // ========================================
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origine = req.headers.origin;
+  if (ORIGINES.includes(origine)) {
+    res.setHeader('Access-Control-Allow-Origin', origine);
+  }
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -20,9 +58,22 @@ export default async function handler(req, res) {
     // ========================================
     // 📥 RÉCUPÉRATION DES DONNÉES
     // ========================================
-    const { basePrompt, selectedTags } = req.body;
+    const selectedTags = validerTags(req.body?.selectedTags);
 
-    if (!selectedTags || Object.keys(selectedTags).length === 0) {
+    if (!selectedTags) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid tags'
+      });
+    }
+
+    // Prompt de base reconstruit ici comme dans l'interface, plutôt que repris tel quel de la requête
+    const basePrompt = Object.entries(selectedTags)
+      .filter(([, value]) => (Array.isArray(value) ? value.length > 0 : value))
+      .map(([, value]) => (Array.isArray(value) ? value.join(', ') : value))
+      .join(', ');
+
+    if (!basePrompt) {
       return res.status(400).json({
         success: false,
         error: 'No tags selected'
