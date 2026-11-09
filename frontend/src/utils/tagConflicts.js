@@ -56,14 +56,14 @@ export const tagConflicts = {
   },
 
   breastSize: {
-    'small': ['huge'],
+    'small': ['large', 'huge'],
     'medium': ['huge'],
     'large': ['small'],
     'huge': ['small', 'medium']
   },
 
   buttSize: {
-    'small': ['huge'],
+    'small': ['large', 'huge'],
     'medium': ['huge'],
     'large': ['small'],
     'huge': ['small', 'medium']
@@ -83,7 +83,7 @@ export const tagConflicts = {
   hairColor: {
     'blonde': ['brown', 'black', 'red', 'white', 'silver'],
     'brown': ['blonde', 'black', 'red', 'white'],
-    'black': ['blonde', 'brown', 'white', 'silver'],
+    'black': ['blonde', 'brown', 'red', 'white', 'silver'],
     'red': ['blonde', 'brown', 'black'],
     'white': ['blonde', 'brown', 'black'],
     'silver': ['blonde', 'black'],
@@ -109,7 +109,7 @@ export const tagConflicts = {
 
   facialExpression: {
     'smiling': ['angry', 'sad'],
-    'angry': ['smiling'],
+    'angry': ['smiling', 'seductive'],
     'sad': ['smiling'],
     'surprised': [],
     'seductive': ['angry'],
@@ -124,11 +124,13 @@ export const tagConflicts = {
     'chainmail': ['dress', 't-shirt'],
     'plate_armor': ['dress', 't-shirt'],
     'body_armor': ['dress', 't-shirt'],
+    't-shirt': ['leather_armor', 'chainmail', 'plate_armor', 'body_armor', 'dress'],
+    'hoodie': ['dress'],
     'dress': ['leather_armor', 'chainmail', 'plate_armor', 'body_armor', 't-shirt', 'hoodie']
   },
 
   bottomwear: {
-    'pants': ['skirt'],
+    'pants': ['skirt', 'shorts'],
     'skirt': ['pants', 'shorts'],
     'shorts': ['skirt', 'pants']
   },
@@ -139,7 +141,7 @@ export const tagConflicts = {
   pose: {
     'standing': ['sitting', 'lying_down', 'kneeling'],
     'sitting': ['standing', 'lying_down', 'running', 'jumping'],
-    'lying_down': ['standing', 'sitting', 'running', 'jumping'],
+    'lying_down': ['standing', 'sitting', 'kneeling', 'running', 'jumping'],
     'kneeling': ['standing', 'lying_down'],
     'running': ['sitting', 'lying_down'],
     'jumping': ['sitting', 'lying_down']
@@ -150,7 +152,7 @@ export const tagConflicts = {
   // ══════════════════════════════════════════
   timeOfDay: {
     'noon': ['night', 'sunset'],
-    'night': ['noon', 'sunset'],
+    'night': ['noon', 'sunset', 'dawn'],
     'sunset': ['noon', 'night'],
     'dawn': ['night']
   },
