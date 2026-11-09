@@ -5,6 +5,10 @@
  * Structure: { catégorie: { tag: [tags_conflictuels] } }
  */
 export const tagConflicts = {
+  // Chaque clé et chaque cible doit être une valeur existante de la même
+  // catégorie dans src/data/prompts.js. Les conflits ne sont comparés qu'à
+  // l'intérieur d'une catégorie (voir getConflictingTags).
+
   // ══════════════════════════════════════════
   // APPARENCE PHYSIQUE
   // ══════════════════════════════════════════
@@ -32,13 +36,9 @@ export const tagConflicts = {
   */
 
   age: {
-    'child': ['adult', 'middle_aged', 'mature', 'elder'],
-    'teen': ['adult', 'middle_aged', 'mature', 'elder'],
-    'young_adult': ['child', 'mature', 'elder'],
-    'adult': ['child', 'teen'],
-    'middle_aged': ['child', 'teen'],
-    'mature': ['child', 'teen', 'young_adult'],
-    'elder': ['child', 'teen', 'young_adult']
+    'young_adult': ['mature', 'elder'],
+    'mature': ['young_adult'],
+    'elder': ['young_adult']
   },
 
   gender: {
@@ -48,27 +48,25 @@ export const tagConflicts = {
 
   bodyType: {
     'petite': ['muscular', 'curvy', 'athletic', 'voluptuous'],
-    'slim': ['muscular', 'curvy', 'voluptuous'],
+    'slender': ['muscular', 'curvy', 'voluptuous'],
     'athletic': ['petite', 'voluptuous'],
-    'curvy': ['petite', 'slim', 'muscular'],
-    'muscular': ['petite', 'slim', 'curvy', 'voluptuous'],
-    'voluptuous': ['petite', 'slim', 'athletic', 'muscular'],
-    'chubby': ['slim', 'muscular', 'athletic']
+    'curvy': ['petite', 'slender', 'muscular'],
+    'muscular': ['petite', 'slender', 'curvy', 'voluptuous'],
+    'voluptuous': ['petite', 'slender', 'athletic', 'muscular']
   },
 
   breastSize: {
-    'flat_chest': ['large_breasts', 'huge_breasts'],
-    'small_breasts': ['huge_breasts'],
-    'medium_breasts': ['flat_chest', 'huge_breasts'],
-    'large_breasts': ['flat_chest', 'small_breasts'],
-    'huge_breasts': ['flat_chest', 'small_breasts', 'medium_breasts']
+    'small': ['huge'],
+    'medium': ['huge'],
+    'large': ['small'],
+    'huge': ['small', 'medium']
   },
 
   buttSize: {
-    'small_butt': ['huge_ass'],
-    'medium_butt': ['huge_ass'],
-    'large_butt': ['small_butt'],
-    'huge_ass': ['small_butt', 'medium_butt']
+    'small': ['huge'],
+    'medium': ['huge'],
+    'large': ['small'],
+    'huge': ['small', 'medium']
   },
 
   // ══════════════════════════════════════════
@@ -83,71 +81,66 @@ export const tagConflicts = {
   },
 
   hairColor: {
-    'blonde_hair': ['brown_hair', 'black_hair', 'red_hair', 'white_hair', 'gray_hair'],
-    'brown_hair': ['blonde_hair', 'black_hair', 'red_hair', 'white_hair'],
-    'black_hair': ['blonde_hair', 'brown_hair', 'white_hair', 'gray_hair'],
-    'red_hair': ['blonde_hair', 'brown_hair', 'black_hair'],
-    'white_hair': ['blonde_hair', 'brown_hair', 'black_hair'],
-    'gray_hair': ['blonde_hair', 'black_hair'],
+    'blonde': ['brown', 'black', 'red', 'white', 'silver'],
+    'brown': ['blonde', 'black', 'red', 'white'],
+    'black': ['blonde', 'brown', 'white', 'silver'],
+    'red': ['blonde', 'brown', 'black'],
+    'white': ['blonde', 'brown', 'black'],
+    'silver': ['blonde', 'black'],
     // Couleurs fantaisie compatibles entre elles
-    'blue_hair': [],
-    'pink_hair': [],
-    'green_hair': [],
-    'purple_hair': []
+    'blue': [],
+    'pink': [],
+    'green': [],
+    'purple': []
   },
 
   // ══════════════════════════════════════════
   // VISAGE
   // ══════════════════════════════════════════
   eyes: {
-    'blue_eyes': ['brown_eyes', 'green_eyes', 'red_eyes', 'purple_eyes', 'yellow_eyes'],
+    'blue_eyes': ['brown_eyes', 'green_eyes', 'red_eyes', 'purple_eyes', 'golden_eyes'],
     'brown_eyes': ['blue_eyes', 'green_eyes', 'red_eyes', 'purple_eyes'],
     'green_eyes': ['blue_eyes', 'brown_eyes', 'red_eyes'],
     'red_eyes': ['blue_eyes', 'brown_eyes', 'green_eyes'],
     'purple_eyes': ['blue_eyes', 'brown_eyes'],
-    'yellow_eyes': ['blue_eyes'],
+    'golden_eyes': ['blue_eyes'],
     'heterochromia': [] // Compatible avec tout
   },
 
   facialExpression: {
-    'smiling': ['crying', 'angry', 'sad', 'frowning'],
-    'laughing': ['crying', 'angry', 'sad', 'frowning'],
-    'crying': ['smiling', 'laughing', 'happy'],
-    'angry': ['smiling', 'laughing', 'happy'],
-    'sad': ['smiling', 'laughing', 'happy'],
+    'smiling': ['angry', 'sad'],
+    'angry': ['smiling'],
+    'sad': ['smiling'],
     'surprised': [],
-    'embarrassed': [],
-    'seductive': ['angry', 'crying'],
-    'happy': ['crying', 'angry', 'sad'],
-    'neutral': [],
-    'frowning': ['smiling', 'laughing']
+    'seductive': ['angry'],
+    'neutral': []
   },
 
   // ══════════════════════════════════════════
   // VÊTEMENTS
   // ══════════════════════════════════════════
   topwear: {
-    'naked_upper': ['t-shirt', 'dress', 'hoodie', 'armor', 'kimono', 'suit'],
-    'armor': ['naked_upper', 'dress', 't-shirt'],
-    'dress': ['armor', 't-shirt', 'hoodie', 'naked_upper']
+    'leather_armor': ['dress', 't-shirt'],
+    'chainmail': ['dress', 't-shirt'],
+    'plate_armor': ['dress', 't-shirt'],
+    'body_armor': ['dress', 't-shirt'],
+    'dress': ['leather_armor', 'chainmail', 'plate_armor', 'body_armor', 't-shirt', 'hoodie']
   },
 
   bottomwear: {
-    'naked_lower': ['pants', 'skirt', 'shorts', 'dress'],
-    'pants': ['naked_lower', 'skirt', 'dress'],
-    'skirt': ['naked_lower', 'pants', 'shorts'],
-    'shorts': ['naked_lower', 'skirt', 'pants']
+    'pants': ['skirt'],
+    'skirt': ['pants', 'shorts'],
+    'shorts': ['skirt', 'pants']
   },
 
   // ══════════════════════════════════════════
   // POSES
   // ══════════════════════════════════════════
   pose: {
-    'standing': ['sitting', 'lying_down', 'kneeling', 'crouching'],
+    'standing': ['sitting', 'lying_down', 'kneeling'],
     'sitting': ['standing', 'lying_down', 'running', 'jumping'],
     'lying_down': ['standing', 'sitting', 'running', 'jumping'],
     'kneeling': ['standing', 'lying_down'],
-    'crouching': ['standing', 'lying_down'],
     'running': ['sitting', 'lying_down'],
     'jumping': ['sitting', 'lying_down']
   },
@@ -156,17 +149,17 @@ export const tagConflicts = {
   // ENVIRONNEMENT
   // ══════════════════════════════════════════
   timeOfDay: {
-    'day': ['night', 'sunset'],
-    'night': ['day', 'sunset'],
-    'sunset': ['day', 'night'],
-    'sunrise': ['night']
+    'noon': ['night', 'sunset'],
+    'night': ['noon', 'sunset'],
+    'sunset': ['noon', 'night'],
+    'dawn': ['night']
   },
 
   weather: {
-    'sunny': ['rainy', 'snowy', 'cloudy'],
-    'rainy': ['sunny', 'snowy'],
-    'snowy': ['sunny', 'rainy'],
-    'cloudy': ['sunny']
+    'clear_sky': ['rain', 'snow', 'cloudy'],
+    'rain': ['clear_sky', 'snow'],
+    'snow': ['clear_sky', 'rain'],
+    'cloudy': ['clear_sky']
   }
 };
 

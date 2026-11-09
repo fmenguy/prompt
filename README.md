@@ -93,7 +93,7 @@ Après déploiement, `GET /api/health` renvoie `"mistral": "connected"` si la cl
 ## Limites
 
 - Les épingles et les sélections ne sont pas conservées au rechargement de la page.
-- La table d'incompatibilités ne couvre pas tout le catalogue : certaines règles visent des valeurs qui n'y figurent pas.
+- La table d'incompatibilités ne compare que des tags d'une même catégorie (pas de règle entre longueur de cheveux et coiffure, par exemple) et seules quinze catégories en ont : coiffure, chaussures, accessoires, angle de vue, lieu, lumière, technique artistique et qualité n'en ont aucune.
 - Pas de tests automatisés ni d'intégration continue.
 
 ## Technologies
@@ -206,7 +206,7 @@ Once deployed, `GET /api/health` returns `"mistral": "connected"` when the key i
 ## Limitations
 
 - Pins and selections are not kept when the page reloads.
-- The incompatibility table does not cover the whole catalogue: some rules target values that are not in it.
+- The incompatibility table only compares tags within the same category (no rule between hair length and hair style, for instance), and only fifteen categories have rules: hair style, footwear, accessories, viewpoint, location, lighting, art medium and quality have none.
 - No automated tests or CI.
 
 ## Tech stack
